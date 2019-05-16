@@ -1,0 +1,49 @@
+{
+"input_settings":{
+    "resize_fac_stress"			: 1.0e-6,
+	"train_test_factor"			: 0.85,
+	"file_names"				: [],
+	"last_undamaged_step"		: [],
+	"last_undamaged_step1"		: [],
+	"last_converged_step"		: []
+	},
+"machine_learning_settings": {
+	"learn_rate_le" :	0.010,
+	"optimizer_le"	:	"AdadeltaOptimizer",
+	"optimizer_le1"	:	"AdagradOptimizer",
+	"optimizer_le1"	:	"AdamOptimizer",
+	"max_epoch_le"		:	200,
+	"learn_crit_le" :   1.0e-5,
+	"learn_rate_nl" :	0.000001,
+	"optimizer_nl"	:	"AdamOptimizer",
+	"optimizer_nl2"	:	"AdadeltaOptimizer",
+	"optimizer_nl3"	:	"AdagradOptimizer",
+	"max_epoch_nl"		:	2000,
+	"learn_crit_nl" :   1.0e-5
+	
+		},
+"optimization_model_data": {
+	"linear_elastic"	: {
+		"type"				:		"LinearElastic",
+		"assumption"		:		"PlaneStress"
+			},
+	"non_linear"	: {
+		"yield_surf_ten"	:		"PosPetracca",
+		"yield_surf_comp"	:		"NegPetracca",
+		"damage_ten"		:		"ExpoSoft",
+		"damage_comp"		:		"BezierHardSoft",
+		"bezier_settings"	:	{
+			"applied?"				:		"Yes",
+			"comp_energy_approach"	:       "Off",
+			"train_controllers"		:		"No"
+				}
+			}
+		},
+"graph_settings": {
+	"graph_name"	: "GraphUnityTest",
+	"py_module"		: "graph_unity_test"
+	},
+"post_settings":{
+	"tensorboard_logdir": "C:/Users/Philip/Desktop/output_name"
+	}
+}

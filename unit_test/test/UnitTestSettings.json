@@ -1,0 +1,29 @@
+{
+"optimization_model_data": {
+	"linear_elastic"	: {
+		"type"				:		"LinearElastic",
+		"assumption"		:		"PlaneStress"
+			},
+	"non_linear"	: {
+		"yield_surf_ten"	:		"PosPetracca",
+		"yield_surf_comp"	:		"NegPetracca",
+		"damage_ten"		:		"ExpoSoft",
+		"damage_comp"		:		"BezierHardSoft",
+		"bezier_settings"	:	{
+			"applied?"				:		"Yes",
+			"comp_energy_approach"	:       "Off",
+			"train_controllers"		:		"No"
+				}
+			}
+		},
+"graph_settings": {
+	"graph_name"	: "GraphClassic",
+	"py_module"		: "graph_classic"
+	},
+"input_data_producuction": {
+	"number_of_directions"	: 5,
+	"number_of_lambda"		: 25,
+	"maximum_strain"		: 0.05,
+	"noise_factor"			: 0.0
+	}
+}
