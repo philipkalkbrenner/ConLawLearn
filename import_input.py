@@ -12,22 +12,12 @@ class TrainingInput(object):
 
         if len(self.input_names) != 0:
             dam_start_step = input_settings["last_undamaged_step"]
-            last_step_conv = input_settings["last_converged_step"]
+            last_step_conv = input_settings["last_utilized_step"]
         
             eps_le = []
             sig_le = []
             eps_nl = []
             sig_nl = []
-            damage_pos = []
-            damage_neg = []
-            sig_pos_le = []
-            sig_pos_nl = []
-            sig_neg_le = []
-            sig_neg_nl = []
-            sig_eff_pos_le = []
-            sig_eff_pos_nl = []
-            sig_eff_neg_le = []
-            sig_eff_neg_nl = []
 
             for i in range(len(self.input_names)):
                 with open(self.input_names[i]) as input_i:
@@ -40,39 +30,15 @@ class TrainingInput(object):
                     sig_le += stress[0:dam_start_step[i]]
                     sig_nl += stress[dam_start_step[i]:last_step_conv[i]]
                 
-                    dam_pos = inp["Mean_Value_of_DAMAGE_TENSION"]["Segment_1"]
-                    dam_neg = inp["Mean_Value_of_DAMAGE_COMPRESSION"]["Segment_1"]
-                    damage_pos += dam_pos[dam_start_step[i]:last_step_conv[i]]
-                    damage_neg += dam_neg[dam_start_step[i]:last_step_conv[i]]
-                
-                    stress_pos = inp["Mean_Value_of_TENSION_STRESS_VECTOR"]["Segment_1"]
-                    stress_neg = inp["Mean_Value_of_COMPRESSION_STRESS_VECTOR"]["Segment_1"]
-                    sig_pos_le += stress_pos[0:dam_start_step[i]]
-                    sig_pos_nl += stress_pos[dam_start_step[i]:last_step_conv[i]]
-                    sig_neg_le += stress_neg[0:dam_start_step[i]]
-                    sig_neg_nl += stress_neg[dam_start_step[i]:last_step_conv[i]]
-                
             eps_le = np.asarray(eps_le, np.float32)
             sig_le = np.asarray(sig_le, np.float32)
             eps_nl = np.asarray(eps_nl, np.float32)
             sig_nl = np.asarray(sig_nl, np.float32)
-            damage_pos = np.asarray(damage_pos, np.float32)
-            damage_neg = np.asarray(damage_neg, np.float32)
-            sig_pos_le = np.asarray(sig_pos_le)
-            sig_pos_nl = np.asarray(sig_pos_nl)
-            sig_neg_le = np.asarray(sig_neg_le)
-            sig_neg_nl = np.asarray(sig_neg_nl)
         
             self.GetStrainsLinearElastic     = eps_le
             self.GetStrainsNonlinear         = eps_nl
             self.GetStressesLinearElastic    = sig_le * self.resize_fac
             self.GetStressesNonlinear        = sig_nl * self.resize_fac
-            self.GetPositiveDamage           = damage_pos
-            self.GetNegativeDamage           = damage_neg
-            self.GetPositeStressLinear       = sig_pos_le * self.resize_fac
-            self.GetNegativeStressLinear     = sig_neg_le * self.resize_fac
-            self.GetPositeStressNonlinear    = sig_pos_nl * self.resize_fac
-            self.GetNegativeStressNonlinear  = sig_neg_nl * self.resize_fac
 
     def SplitTrainingAndTesting(self, eps, sig):
         l = eps.shape[0]
