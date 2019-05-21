@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 from ConLawLearn import ConLawL
+import sys
 
 
 class GraphUnityTest(object):
@@ -389,6 +390,7 @@ class GraphUnityTest(object):
         ax2.set_title('Plot of Test Data')
         ax2.set_xlabel('stress' r'$\ \epsilon_{yy}\ [-]$')
         ax2.set_ylabel('stress' r'$\ \sigma_{yy}\ [N/mm^2]$')
+        ax2.legend(loc = 'lower left')
 
         fig3 = plt.figure()
         ax3 = fig3.add_subplot(111)
@@ -398,5 +400,6 @@ class GraphUnityTest(object):
         ax3.set_title('Plot of Test Data')
         ax3.set_xlabel('stress' r'$\ \gamma_{xy}\ [-]$')
         ax3.set_ylabel('stress' r'$\ \sigma_{xy}\ [N/mm^2]$')
+        ax3.legend(loc = 'lower left')
 
         plt.show()
