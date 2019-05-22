@@ -8,10 +8,10 @@ class YieldCriterion(object):
         ''' Drucker Prager Yield Criterion
             k1 = 0.0
         '''
-        def NegativeEquivalentStress(SIG_EFF, fcp, fcbi, ft):
+        def NegativeEquivalentStress(SIG_EFF, fc0, fcp, fcbi, ft):
             k1 = tf.constant(0.0)
             tau = YieldCriterion._Negative_Equivalent_Stress(SIG_EFF, \
-                                                      fcp, fcbi, ft, k1)
+                                                      fc0, fcp, fcbi, ft, k1)
             return tau
 
         def PositiveEquivalentStress(SIG_EFF, fcp, fcbi, ft):
@@ -24,10 +24,10 @@ class YieldCriterion(object):
         ''' Lubliner Yield Criterion
             k1 = 1.0
         '''
-        def NegativeEquivalentStress(SIG_EFF, fcp, fcbi, ft):
+        def NegativeEquivalentStress(SIG_EFF, fc0, fcp, fcbi, ft):
             k1 = tf.constant(1.0)
             tau = YieldCriterion._Negative_Equivalent_Stress(SIG_EFF, \
-                                                      fcp, fcbi, ft, k1)
+                                                      fc0, fcp, fcbi, ft, k1)
             return tau
 
         def PositiveEquivalentStress(SIG_EFF, fcp, fcbi, ft):
@@ -40,11 +40,11 @@ class YieldCriterion(object):
         ''' Petracca Modified Yield Criterion
             k1 = 0.16
         '''
-        def NegativeEquivalentStress(SIG_EFF, fcp, fcbi, ft):
+        def NegativeEquivalentStress(SIG_EFF, fc0, fcp, fcbi, ft):
             with tf.name_scope("PetraccaYieldNegative"):
                 k1 = tf.constant(0.16)
                 tau = YieldCriterion._Negative_Equivalent_Stress(SIG_EFF, \
-                                                      fcp, fcbi, ft, k1)
+                                                      fc0, fcp, fcbi, ft, k1)
             return tau
 
         def PositiveEquivalentStress(SIG_EFF, fcp, fcbi, ft):
@@ -99,10 +99,10 @@ class YieldCriterion(object):
         return (T,T1)
 
         
-    def _Negative_Equivalent_Stress(SIG_EFF, fcp, fcbi, ft, k1):
+    def _Negative_Equivalent_Stress(SIG_EFF, fc0, fcp, fcbi, ft, k1):
         kb      = YieldCriterion.__get_kb(fcbi, fcp)
         alpha   = YieldCriterion.__get_alpha(kb)
-        beta    = YieldCriterion.__get_beta(fcp, ft, alpha)
+        beta    = YieldCriterion.__get_beta(fc0, ft, alpha)
         i1      = YieldCriterion.__get_first_invariant(SIG_EFF)
         j2      = YieldCriterion.__get_second_deviatoric_invariant(SIG_EFF)
         s1, s2  = YieldCriterion.__get_principal_stress_values(SIG_EFF)

@@ -179,7 +179,7 @@ class ConstitutiveLaw(object):
             '''
             with tf.name_scope("NegEquiStress"):            
                 tau_neg = YieldCriterion.DruckerPrager.NegativeEquivalentStress\
-                      (sig_eff, fcp, fcbi, ft)
+                      (sig_eff, fcp, fcp, fcbi, ft)
             with tf.name_scope("NegDamVar"):
                 d_neg =   SofteningType.ExponentialSoftening.GetDamageVariable\
                       (tau_neg, e, fcp, gc)
@@ -220,7 +220,7 @@ class ConstitutiveLaw(object):
                Compression Part
             '''            
             tau_neg = YieldCriterion.DruckerPrager.NegativeEquivalentStress\
-                      (sig_eff, fcp, fcbi, ft)
+                      (sig_eff, fcp, fcp, fcbi, ft)
             d_neg =   SofteningType.ExponentialSoftening.GetDamageVariable\
                       (tau_neg, e, fcp, gc)
             sig_eff_neg = EffectiveStressSplit.GetNegativeStress(sig_eff)
@@ -301,7 +301,7 @@ class ConstitutiveLaw(object):
             '''            
             with tf.name_scope("NegEquiStress"):
                 tau_neg = YieldCriterion.DruckerPrager.NegativeEquivalentStress\
-                      (sig_eff, fcp, fcbi, ft)
+                      (sig_eff, r0, fcp, fcbi, ft)
             with tf.name_scope("NegDamVar"):
                 d_neg   = SofteningType.ParabolicHardeningExponentialSoftening.\
                       GetDamageVariable(tau_neg, e, fcp, gc, r0, re, rp)
@@ -345,7 +345,7 @@ class ConstitutiveLaw(object):
                Compression Part
             '''            
             tau_neg = YieldCriterion.DruckerPrager.NegativeEquivalentStress\
-                      (sig_eff, fcp, fcbi, ft)
+                      (sig_eff, r0, fcp, fcbi, ft)
             d_neg   = SofteningType.ParabolicHardeningExponentialSoftening.\
                       GetDamageVariable(tau_neg, e, fcp, gc, r0, re, rp)
             sig_eff_neg = EffectiveStressSplit.GetNegativeStress(sig_eff)
@@ -410,7 +410,7 @@ class ConstitutiveLaw(object):
             '''            
             with tf.name_scope("NegEquiStress"):
                 tau_neg = YieldCriterion.DruckerPrager.NegativeEquivalentStress\
-                      (sig_eff, sp, fcbi, ft)
+                      (sig_eff, s0, sp, fcbi, ft)
             with tf.name_scope("NegDamVar"):
                 d_neg   = SofteningType.BezierHardeningSoftening.GetDamageVariable\
                       (tau_neg, e, e0, ei, ep, ej, ek, er, eu, \
@@ -463,7 +463,7 @@ class ConstitutiveLaw(object):
                Compression Part
             '''            
             tau_neg = YieldCriterion.DruckerPrager.NegativeEquivalentStress\
-                      (sig_eff, sp, fcbi, ft)
+                      (sig_eff, s0, sp, fcbi, ft)
             d_neg   = SofteningType.BezierHardeningSoftening.GetDamageVariable\
                       (tau_neg, e, e0, ei, ep, ej, ek, er, eu, \
                        s0, si, sp, sj, sk, sr, su)
@@ -524,7 +524,7 @@ class ConstitutiveLaw(object):
             '''            
             with tf.name_scope("NegEquiStress"):
                 tau_neg = YieldCriterion.Lubliner.NegativeEquivalentStress\
-                      (sig_eff, fcp, fcbi, ft)
+                      (sig_eff, fcp, fcp, fcbi, ft)
             with tf.name_scope("NegDamVar"):
                 d_neg =   SofteningType.ExponentialSoftening.GetDamageVariable\
                       (tau_neg, e, fcp, gc)
@@ -564,7 +564,7 @@ class ConstitutiveLaw(object):
                Compression Part
             '''            
             tau_neg = YieldCriterion.Lubliner.NegativeEquivalentStress\
-                      (sig_eff, fcp, fcbi, ft)
+                      (sig_eff, fcp, fcp, fcbi, ft)
             d_neg =   SofteningType.ExponentialSoftening.GetDamageVariable\
                       (tau_neg, e, fcp, gc)
             sig_eff_neg = EffectiveStressSplit.GetNegativeStress(sig_eff)
@@ -645,7 +645,7 @@ class ConstitutiveLaw(object):
             '''            
             with tf.name_scope("NegEquiStress"):
                 tau_neg = YieldCriterion.Lubliner.NegativeEquivalentStress\
-                      (sig_eff, fcp, fcbi, ft)
+                      (sig_eff, r0, fcp, fcbi, ft)
             with tf.name_scope("NegDamVar"):
                 d_neg   = SofteningType.ParabolicHardeningExponentialSoftening.\
                       GetDamageVariable(tau_neg, e, fcp, gc, r0, re, rp)
@@ -689,7 +689,7 @@ class ConstitutiveLaw(object):
                Compression Part
             '''            
             tau_neg = YieldCriterion.Lubliner.NegativeEquivalentStress\
-                      (sig_eff, fcp, fcbi, ft)
+                      (sig_eff, r0, fcp, fcbi, ft)
             d_neg   = SofteningType.ParabolicHardeningExponentialSoftening.\
                       GetDamageVariable(tau_neg, e, fcp, gc, r0, re, rp)
             sig_eff_neg = EffectiveStressSplit.GetNegativeStress(sig_eff)
@@ -753,7 +753,7 @@ class ConstitutiveLaw(object):
             '''            
             with tf.name_scope("NegEquiStress"):
                 tau_neg = YieldCriterion.Lubliner.NegativeEquivalentStress\
-                      (sig_eff, sp, fcbi, ft)
+                      (sig_eff, s0, sp, fcbi, ft)
             with tf.name_scope("NegDamVar"):
                 d_neg   = SofteningType.BezierHardeningSoftening.GetDamageVariable\
                       (tau_neg, e, e0, ei, ep, ej, ek, er, eu, \
@@ -806,7 +806,7 @@ class ConstitutiveLaw(object):
                Compression Part
             '''            
             tau_neg = YieldCriterion.Lubliner.NegativeEquivalentStress\
-                      (sig_eff, sp, fcbi, ft)
+                      (sig_eff, s0, sp, fcbi, ft)
             d_neg   = SofteningType.BezierHardeningSoftening.GetDamageVariable\
                       (tau_neg, e, e0, ei, ep, ej, ek, er, eu, \
                        s0, si, sp, sj, sk, sr, su)
@@ -868,7 +868,7 @@ class ConstitutiveLaw(object):
             '''            
             with tf.name_scope("NegEquiStress"):
                 tau_neg = YieldCriterion.Petracca.NegativeEquivalentStress\
-                      (sig_eff, fcp, fcbi, ft)
+                      (sig_eff, fcp, fcp, fcbi, ft)
             with tf.name_scope("NegDamVar"):
                 d_neg =   SofteningType.ExponentialSoftening.GetDamageVariable\
                       (tau_neg, e, fcp, gc)
@@ -908,7 +908,7 @@ class ConstitutiveLaw(object):
                Compression Part
             '''            
             tau_neg = YieldCriterion.Petracca.NegativeEquivalentStress\
-                      (sig_eff, fcp, fcbi, ft)
+                      (sig_eff, fcp, fcp, fcbi, ft)
             d_neg =   SofteningType.ExponentialSoftening.GetDamageVariable\
                       (tau_neg, e, fcp, gc)
             sig_eff_neg = EffectiveStressSplit.GetNegativeStress(sig_eff)
@@ -989,7 +989,7 @@ class ConstitutiveLaw(object):
             '''            
             with tf.name_scope("NegEquiStress"):
                 tau_neg = YieldCriterion.Petracca.NegativeEquivalentStress\
-                      (sig_eff, fcp, fcbi, ft)
+                      (sig_eff, r0, fcp, fcbi, ft)
             with tf.name_scope("NegDamVar"):
                 d_neg   = SofteningType.ParabolicHardeningExponentialSoftening.\
                       GetDamageVariable(tau_neg, e, fcp, gc, r0, re, rp)
@@ -1063,7 +1063,7 @@ class ConstitutiveLaw(object):
             '''
             with tf.name_scope("NegEquiStress"):           
                tau_neg = YieldCriterion.Petracca.NegativeEquivalentStress\
-                      (sig_eff, sp, fcbi, ft)
+                      (sig_eff, s0, sp, fcbi, ft)
             with tf.name_scope("NegDamVar"):
                d_neg   = SofteningType.BezierHardeningSoftening.GetDamageVariable\
                       (tau_neg, e, e0, ei, ep, ej, ek, er, eu, \
@@ -1116,7 +1116,7 @@ class ConstitutiveLaw(object):
                Compression Part
             '''            
             tau_neg = YieldCriterion.Petracca.NegativeEquivalentStress\
-                      (sig_eff, sp, fcbi, ft)
+                      (sig_eff, s0, sp, fcbi, ft)
             d_neg   = SofteningType.BezierHardeningSoftening.GetDamageVariable\
                       (tau_neg, e, e0, ei, ep, ej, ek, er, eu, \
                        s0, si, sp, sj, sk, sr, su)
