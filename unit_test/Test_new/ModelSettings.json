@@ -40,8 +40,8 @@
 			}
 		},
 "graph_settings": {
-	"graph_name"	: "GraphUnityTest",
-	"py_module"		: "graph_unity_test"
+	"graph_name"	: "GraphCheck",
+	"py_module"		: "graph_check"
 	},
 "post_settings":{
 	"tensorboard_logdir": "C:/Users/Philip/Desktop/output_name"

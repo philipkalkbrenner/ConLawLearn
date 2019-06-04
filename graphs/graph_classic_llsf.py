@@ -1,10 +1,11 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
-#from ConLawLearn import ConLawL
-import ConLawLearn as ConLawL
+from ConLawLearn import ConLawL
+import sys
 
-class GraphClassic(object):
+
+class GraphClassicLLSF(object):
     def __init__(self, model_settings, initial_variable_values):
         self.model_settings = model_settings
         self.init_var_values = initial_variable_values
@@ -27,7 +28,16 @@ class GraphClassic(object):
 
         # Construct the Graph
         self._PrintInfoGraphType()
+
+        # Linear least square fitting to obtain linear elastic parameters
+        (e, nu, c) = self._LinearLeastSquare() 
+        print(e)
+        print(nu)
+        print(c)
+        sys.exit()
  
+
+
         self.graph = tf.Graph()
         with self.graph.as_default():
             # Build the Placeholders for the Machine Learning model
@@ -52,6 +62,8 @@ class GraphClassic(object):
 
             # Global operations to start the graph
             self._GlobalOpGraphStart()
+
+        
 
         # Initialize the Graph session:
         self._InitializeSession()
@@ -105,6 +117,26 @@ class GraphClassic(object):
         self.eps_nl_train, self.eps_nl_test, self.sig_nl_train, self.sig_nl_test = \
                               Inputs.SplitTrainingAndTesting(self.eps_nl, self.sig_nl)
     
+    def _LinearLeastSquare(self):
+        y = self.sig_le
+        x = self.eps_le
+        #print("eps",x)
+        #print("sig",y)
+        xt = np.transpose(x)
+        #print("epst",xt)
+        xt_x = np.matmul(xt,x)
+        #print("epst_eps",xt_x)
+        #xt_x_inv = np.linalg.inv(np.matmul(xt,x))
+        xt_x_inv = np.linalg.inv(xt_x)
+        #print("epst_eps_inv",xt_x_inv)
+        xt_y = np.matmul(xt,y)
+        #print("epst_sig",xt_y)
+
+        c = np.matmul(xt_x_inv,xt_y)
+        nu = np.divide(c[0,1],c[0,0])
+        e = np.multiply(c[0,0],np.subtract(1.0,np.square(nu)))
+        return (e, nu, c)
+    
     def _BuildPlaceholders(self):
         with tf.name_scope("Placeholders"):
             self.EPS = tf.placeholder(tf.float32, name="EPSILON")
@@ -145,14 +177,14 @@ class GraphClassic(object):
 
     def _CallPredictedStresses(self):
         with tf.name_scope("LinearElasticLaw"):
-            le_model = getattr(ConLawL, self.le_model_name)
+            le_model = getattr(ConLawL.ConstitutiveLaw(), self.le_model_name)
             with tf.name_scope('PredictedStress'):
-                self.SIG_PRED_LE = le_model(self.vars_le_limit).GetStress(self.EPS)
-                SIG_EFF = le_model(self.vars_le_limit).GetStress(self.EPS)
+                self.SIG_PRED_LE = le_model.GetStress(self.EPS, self.vars_le_limit)
+                SIG_EFF = le_model.GetStress(self.EPS, self.vars_le_limit)
         with tf.name_scope("DamageLaw"):    
-            nl_model = getattr(ConLawL, self.damage_model_name)
+            nl_model = getattr(ConLawL.ConstitutiveLaw(), self.damage_model_name)
             with tf.name_scope('PredictedStress'):
-                self.SIG_PRED_NL = nl_model(self.vars_le_limit, self.vars_nl_limit).GetStress(SIG_EFF)
+                self.SIG_PRED_NL = nl_model(SIG_EFF, self.vars_le_limit, self.vars_nl_limit).GetStress
 
     def _ConstructCostFunction(self):
         with tf.name_scope('TrainingFunctions'):
@@ -206,13 +238,6 @@ class GraphClassic(object):
         self.sig_le_prev = self.sess.run(self.SIG_PRED_LE, feed_dict={self.EPS:self.eps_le_train})
         randomizer_le = np.arange(self.eps_le_train.shape[0])
 
-        print(" ------------------------------------------------------------------------------")
-        print("       Initial Variable Values:")
-        print("          ", self.sess.run(self.vars_le_limit))
-        print("       Initial Cost :")
-        print("          ", self.sess.run(self.train_le, feed_dict={self.EPS: self.eps_le_train, self.SIG: self.sig_le_train}))
-        print(" ------------------------------------------------------------------------------")
-
         for epoch_i in range(n_epochs_le):
             np.random.shuffle(randomizer_le)
             eps_le_rand = self.eps_le_train[randomizer_le]
@@ -251,15 +276,7 @@ class GraphClassic(object):
 
         prev_train_cost_nl = 0.0
         self.sig_nl_prev = self.sess.run(self.SIG_PRED_NL, feed_dict={self.EPS:self.eps_nl_train})
-        randomizer_nl = np.arange(self.eps_nl_train.shape[0]) 
-
-        print(" ------------------------------------------------------------------------------")
-        print("       Initial Variable Values:")
-        print("          ", self.sess.run(self.vars_le_limit))
-        print("          ", self.sess.run(self.vars_nl_limit))
-        print("       Initial Cost :")
-        print("          ", self.sess.run(self.train_nl, feed_dict={self.EPS: self.eps_nl_train, self.SIG: self.sig_nl_train}))
-        print(" ------------------------------------------------------------------------------")       
+        randomizer_nl = np.arange(self.eps_nl_train.shape[0])        
 
         for epoch_i in range(n_epochs_nl):
             np.random.shuffle(randomizer_nl)
@@ -343,9 +360,9 @@ class GraphClassic(object):
         print(" GRAPH CONSTRUCTION TYPE")
         print("    Linear Elastic Parameters:",  "\n",\
               "      --> Feeding Linear Input Strains", "\n",\
-              "      --> Predicting Linear Stresses", "\n",\
-              "      --> Loss Function with Input Stresses", "\n",\
-              "      --> Optimize Linear Parameters to Minimize Loss")
+              "      --> Feeding Linear Input Stresses", "\n",\
+              "      --> Linear Least Square for Elastictiy Matrix", "\n",\
+              "      --> Extract Young Modulus and Poisson Ratio from Elasticity Matrix")
         print("    Nonlinear Damage Parameters:", "\n",\
               "      --> Feeding Input Strains", "\n",\
               "      --> Predicting Damage Stress", "\n",\

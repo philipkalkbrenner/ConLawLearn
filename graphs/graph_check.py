@@ -3,25 +3,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-import ConLawLearn as ConLawL
+import ConLawLearn as cll
 
 
-class GraphUnityTest(object):
-    def __init__(self, unity_settings, unit_test_var_values, model_settings, init_var_values):
+class GraphCheck(object):
+    def __init__(self, unity_settings, unit_test_var_values):
         self.unity_settings = unity_settings
         self.unit_test_var_values = unit_test_var_values
-        self.model_settings = model_settings
-        self.init_var_values = init_var_values
-
-        self.input_settings = self.model_settings["input_settings"]
-        self.ml_settings = self.model_settings["machine_learning_settings"]
-        self.post_settings = self.model_settings["post_settings"]
 
     def Run(self):
         self._PrintHeaderMain()
 
         #Produce Data to Test the Model
         self.epsilon, self.epsilon_test, self.sigma, self.sigma_test = self._ProduceInputData()
+        print(self.epsilon)
+        print(self.sigma)
+
+        '''
+
 
         # Initialize Models to Train
         self._InitializeLinearModel()
@@ -74,11 +73,12 @@ class GraphUnityTest(object):
 
         # Plot results
         self._ResultPlot()
+        '''
 
     '''
     ------------------------------------------------------------------------------
     '''
-
+    '''
     def _InitializeLinearModel(self):
         #self.le_model = ConLawL.ModelSettings.GetLinearElasticModel(self.model_settings)
         self.le_model_type = ConLawL.ModelSettings.GetLinearElasticType(self.model_settings)
@@ -91,7 +91,7 @@ class GraphUnityTest(object):
         self.damage_model_name = ConLawL.ModelSettings.GetDamageModelName(self.model_settings)
         pass
 
-        # Check for Bezier Application:                                '''
+        # Check for Bezier Application:                                
         self.bezier_applied = damage_model["bezier_settings"]["applied?"]
         self.bezier_energy_approach = damage_model["bezier_settings"]["comp_energy_approach"]
         self.bezier_train_controllers = damage_model["bezier_settings"]["train_controllers"]
@@ -142,11 +142,11 @@ class GraphUnityTest(object):
         pass
 
     def _CallPredictedStresses(self):
-        le_model = getattr(ConLawL, self.le_model_name)
-        self.SIG_EFF = le_model(self.vars_le_limit).GetStress(self.EPS)
+        le_model = getattr(ConLawL.ConstitutiveLaw(), self.le_model_name)
+        self.SIG_EFF = le_model.GetStress(self.EPS, self.vars_le_limit)
    
-        nl_model = getattr(ConLawL, self.damage_model_name)
-        self.SIG_PRED_NL = nl_model(self.vars_le_limit, self.vars_nl_limit).GetStress(self.SIG_EFF)
+        nl_model = getattr(ConLawL.ConstitutiveLaw(), self.damage_model_name)
+        self.SIG_PRED_NL = nl_model(self.SIG_EFF, self.vars_le_limit, self.vars_nl_limit).GetStress
         pass
     
     def _ConstructCostFunction(self):
@@ -256,15 +256,16 @@ class GraphUnityTest(object):
         ax3.legend(loc = 'lower left')
 
         plt.show()
-
+    '''
 
     def _ProduceInputData(self):
-        le_model_type = ConLawL.ModelSettings.GetLinearElasticType(self.unity_settings)
-        le_model_name = ConLawL.ModelSettings.GetLinearElasticModelName(self.unity_settings)
+        le_model_type = cll.ModelSettings.GetLinearElasticType(self.unity_settings)
+        print(le_model_type)
+        le_model_name = cll.ModelSettings.GetLinearElasticModelName(self.unity_settings)
 
-        damage_model = ConLawL.ModelSettings.GetDamageModel(self.unity_settings)
-        damage_model_type =  ConLawL.ModelSettings.GetDamageModelType(self.unity_settings)
-        damage_model_name = ConLawL.ModelSettings.GetDamageModelName(self.unity_settings)
+        damage_model = cll.ModelSettings.GetDamageModel(self.unity_settings)
+        damage_model_type =  cll.ModelSettings.GetDamageModelType(self.unity_settings)
+        damage_model_name = cll.ModelSettings.GetDamageModelName(self.unity_settings)
 
         bezier_applied = damage_model["bezier_settings"]["applied?"]
         bezier_energy_approach = damage_model["bezier_settings"]["comp_energy_approach"]
@@ -272,30 +273,30 @@ class GraphUnityTest(object):
 
         unit_test_settings = self.unity_settings["input_data_producuction"]
 
-        epsilon_test = ConLawL.RandomStrainGenerator.GetRandomStrainForPlot()
+        epsilon_test = cll.RandomStrainGenerator.GetRandomStrainForPlot()
         # Strains as Input for the Model to train
-        epsilon = ConLawL.RandomStrainGenerator(unit_test_settings).GetStrain
+        epsilon = cll.RandomStrainGenerator(unit_test_settings).GetStrain
 
         # Tensorflow Placeholder of Data Production
         EPS = tf.placeholder(tf.float32, name="EPSILON")
 
         # Construct the Variable Lists
-        var_type_le = getattr(ConLawL.ModelVariables(), le_model_type)
+        var_type_le = getattr(cll.ModelVariables(), le_model_type)
         vars_le = var_type_le(self.unit_test_var_values).Variables
         #vars_le_plot = var_type_le(self.unit_test_var_values).Vars4Print
         vars_le_limit = var_type_le.ConstrainVariables(vars_le, self.unit_test_var_values)
 
         if bezier_energy_approach =="On" and bezier_applied =="Yes":
-            var_type_nl = getattr(ConLawL.ModelVariables(), damage_model_type + "WithFractureEnergy")
+            var_type_nl = getattr(cll.ModelVariables(), damage_model_type + "WithFractureEnergy")
         elif bezier_energy_approach =="Off" and bezier_applied=="Yes":
-            var_type_nl = getattr(ConLawL.ModelVariables(), damage_model_type)
+            var_type_nl = getattr(cll.ModelVariables(), damage_model_type)
         else:
             if bezier_applied == "Yes":
                 print(" WARNING: Error in ModelSettings.Json !!!", "\n",\
                     "Please define the comp_energy_approach in ModelSettings.json as On or Off!")
                 sys.exit()
             else:
-                var_type_nl = getattr(ConLawL.ModelVariables(), damage_model_type)
+                var_type_nl = getattr(cll.ModelVariables(), damage_model_type)
         
         vars_nl = var_type_nl(self.unit_test_var_values).Variables
 
@@ -306,12 +307,15 @@ class GraphUnityTest(object):
 
 
         # Call the model linear and nonlinear model classes
-        le_model = getattr(ConLawL, le_model_name)
-        nl_model = getattr(ConLawL, damage_model_name)
+        le_model = getattr(cll, le_model_name)
+        #le_model = getattr(ConLawL.ConstitutiveLaw(), le_model_name)
+        nl_model = getattr(cll, damage_model_name)
+        #nl_model = getattr(ConLawL.ConstitutiveLaw(), damage_model_name)
 
         # Compute the Stresses
         SIG_EFF = le_model(vars_le_limit).GetStress(EPS)
         SIG_PRED_NL = nl_model(vars_le_limit, vars_nl_limit).GetStress(SIG_EFF)
+        #SIG_PRED_NL = nl_model(SIG_EFF, vars_le_limit, vars_nl_limit).GetStress
 
         # Initialize the Tensorflow Session
         init = tf.global_variables_initializer()
@@ -396,3 +400,6 @@ class GraphUnityTest(object):
         print(" ------------------------------------------------------------------------------")
         '''
         
+
+
+

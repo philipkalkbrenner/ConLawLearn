@@ -1,10 +1,10 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
-#from ConLawLearn import ConLawL
-import ConLawLearn as ConLawL
+from ConLawLearn import ConLawL
 
-class GraphClassic(object):
+
+class GraphLinearElastic(object):
     def __init__(self, model_settings, initial_variable_values):
         self.model_settings = model_settings
         self.init_var_values = initial_variable_values
@@ -18,7 +18,7 @@ class GraphClassic(object):
 
         # Initialize Models to Train
         self._InitializeLinearModel()
-        self._InitializeDamageModel()
+        #self._InitializeDamageModel()
         self._PrintInfoModel()
 
         # Import the Input Data
@@ -60,18 +60,10 @@ class GraphClassic(object):
         self._PrintInfoStartOptimizationLinear()
         self._RunTrainingLoopLinearModel()
 
-        # Start training loop of damage model
-        self._PrintInfoStartOptimizationDamage()
-        self._RunTrainingLoopDamageModel()
 
-
-        #fig1 = self._ResultPlot(0, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
-        #fig2 = self._ResultPlot(1, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
-        #fig3 = self._ResultPlot(2, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
-
-        fig4 = self._ResultPlot(0, self.eps_nl_train, self.sig_nl_train, self.sig_nl_eval, self.sig_nl_prev)
-        fig5 = self._ResultPlot(1, self.eps_nl_train, self.sig_nl_train, self.sig_nl_eval, self.sig_nl_prev)
-        fig6 = self._ResultPlot(2, self.eps_nl_train, self.sig_nl_train, self.sig_nl_eval, self.sig_nl_prev)
+        fig1 = self._ResultPlot(0, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
+        fig2 = self._ResultPlot(1, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
+        fig3 = self._ResultPlot(2, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
         plt.show()
 
     '''
@@ -97,13 +89,13 @@ class GraphClassic(object):
         Inputs = ConLawL.TrainingInput(self.input_settings)
         self.eps_le = Inputs.GetStrainsLinearElastic
         self.sig_le = Inputs.GetStressesLinearElastic
-        self.eps_nl = Inputs.GetStrainsNonlinear
-        self.sig_nl = Inputs.GetStressesNonlinear
+        #self.eps_nl = Inputs.GetStrainsNonlinear
+        #self.sig_nl = Inputs.GetStressesNonlinear
 
         self.eps_le_train, self.eps_le_test, self.sig_le_train, self.sig_le_test = \
                               Inputs.SplitTrainingAndTesting(self.eps_le, self.sig_le)
-        self.eps_nl_train, self.eps_nl_test, self.sig_nl_train, self.sig_nl_test = \
-                              Inputs.SplitTrainingAndTesting(self.eps_nl, self.sig_nl)
+        #self.eps_nl_train, self.eps_nl_test, self.sig_nl_train, self.sig_nl_test = \
+        #                      Inputs.SplitTrainingAndTesting(self.eps_nl, self.sig_nl)
     
     def _BuildPlaceholders(self):
         with tf.name_scope("Placeholders"):
@@ -118,74 +110,27 @@ class GraphClassic(object):
                 self.vars_le_plot = var_type_le(self.init_var_values).Vars4Print
                 self.vars_le_limit = var_type_le.ConstrainVariables(self.vars_le, self.init_var_values)
             
-            with tf.name_scope("DamageModelVariables"):
-                if self.bezier_energy_approach == "On" and self.bezier_applied =="Yes":
-                    var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type + "WithFractureEnergy")
-                    self.vars_nl_plot = var_type_nl(self.init_var_values).Vars4Print
-                    if bezier_train_controllers =="No":
-                        self.vars_nl_plot = self.vars_nl_plot[:-3]
-                elif self.bezier_energy_approach =="Off" and self.bezier_applied=="Yes":
-                    var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type)
-                    self.vars_nl_plot = var_type_nl(self.init_var_values).Vars4Print
-                else:
-                    if self.bezier_applied == "Yes":
-                        print(" WARNING: Error in ModelSettings.Json !!!", "\n",\
-                        "Please define the comp_energy_approach in ModelSettings.json as On or Off!")
-                        sys.exit()
-                    else:
-                        var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type)
-                        self.vars_nl_plot = var_type_nl(self.init_var_values).Vars4Print
-
-                self.vars_nl = var_type_nl(self.init_var_values).Variables
-            
-                if self.bezier_applied == "Yes":
-                    self.vars_nl_limit = var_type_nl.ConstrainVariables(self.vars_nl, self.vars_le_limit,  self.init_var_values)
-                else:
-                    self.vars_nl_limit = var_type_nl.ConstrainVariables(vars_nl)
-
     def _CallPredictedStresses(self):
         with tf.name_scope("LinearElasticLaw"):
-            le_model = getattr(ConLawL, self.le_model_name)
+            le_model = getattr(ConLawL.ConstitutiveLaw(), self.le_model_name)
             with tf.name_scope('PredictedStress'):
-                self.SIG_PRED_LE = le_model(self.vars_le_limit).GetStress(self.EPS)
-                SIG_EFF = le_model(self.vars_le_limit).GetStress(self.EPS)
-        with tf.name_scope("DamageLaw"):    
-            nl_model = getattr(ConLawL, self.damage_model_name)
-            with tf.name_scope('PredictedStress'):
-                self.SIG_PRED_NL = nl_model(self.vars_le_limit, self.vars_nl_limit).GetStress(SIG_EFF)
+                self.SIG_PRED_LE = le_model.GetStress(self.EPS, self.vars_le_limit)
 
     def _ConstructCostFunction(self):
         with tf.name_scope('TrainingFunctions'):
             self.train_le = tf.reduce_sum(tf.square(tf.subtract(self.SIG_PRED_LE, \
                                             self.SIG)), name = "Cost_le")
-            self.train_nl = tf.reduce_sum(tf.square(tf.subtract(self.SIG_PRED_NL, \
-                                            self.SIG)), name = "Cost_nl")
 
     def _ConstructOptimizer(self):
         with tf.name_scope("Optimization"):
             self.l_rate_le = self.ml_settings["learn_rate_le"]
             optim_le = getattr(tf.train, self.ml_settings["optimizer_le"])
             self.optimizer_le  = optim_le(self.l_rate_le).minimize(self.train_le, var_list = self.vars_le)
-
-            self.l_rate_nl = self.ml_settings["learn_rate_nl"]
-            optim_nl = getattr(tf.train, self.ml_settings["optimizer_nl"])
-            if self.bezier_applied == "Yes" and self.bezier_energy_approach == "On" \
-                and bezier_train_controllers == "No":
-                self.optimizer_nl  = optim_nl(self.l_rate_nl).minimize(self.train_nl, var_list = self.vars_nl[:-3])
-            else:
-               self.optimizer_nl  = optim_nl(self.l_rate_nl).minimize(self.train_nl, var_list = self.vars_nl)
     
     def _ConstructSummaryWriter(self):
         with tf.name_scope('AllSummaries'):
             sum_writer_le = getattr(ConLawL.ModelVariables(), self.le_model_type + "Summary")
             sum_writer_le(self.vars_le_limit)
-            if self.bezier_applied == "Yes" and self.bezier_energy_approach == "On":
-                sum_writer_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type + \
-                                    "WithFractureEnergy" + "Summary")
-            else:
-                sum_writer_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type + \
-                                "Summary")
-            sum_writer_nl(self.vars_nl_limit)
     
     def _GlobalOpGraphStart(self):
         with tf.name_scope("GlobalOps"):
@@ -207,10 +152,8 @@ class GraphClassic(object):
         randomizer_le = np.arange(self.eps_le_train.shape[0])
 
         print(" ------------------------------------------------------------------------------")
-        print("       Initial Variable Values:")
+        print("       Initial Variable Value:")
         print("          ", self.sess.run(self.vars_le_limit))
-        print("       Initial Cost :")
-        print("          ", self.sess.run(self.train_le, feed_dict={self.EPS: self.eps_le_train, self.SIG: self.sig_le_train}))
         print(" ------------------------------------------------------------------------------")
 
         for epoch_i in range(n_epochs_le):
@@ -244,49 +187,6 @@ class GraphClassic(object):
 
         print(" OPTIMIZATION OF THE LINEAR ELASTIC VARIABLES FINISHED")
         print("    Final Tolerance of Training Cost: ", actual_tolerance)
-
-    def _RunTrainingLoopDamageModel(self):
-
-        n_epochs_nl = self.ml_settings["max_epoch_nl"]
-
-        prev_train_cost_nl = 0.0
-        self.sig_nl_prev = self.sess.run(self.SIG_PRED_NL, feed_dict={self.EPS:self.eps_nl_train})
-        randomizer_nl = np.arange(self.eps_nl_train.shape[0]) 
-
-        print(" ------------------------------------------------------------------------------")
-        print("       Initial Variable Values:")
-        print("          ", self.sess.run(self.vars_le_limit))
-        print("          ", self.sess.run(self.vars_nl_limit))
-        print("       Initial Cost :")
-        print("          ", self.sess.run(self.train_nl, feed_dict={self.EPS: self.eps_nl_train, self.SIG: self.sig_nl_train}))
-        print(" ------------------------------------------------------------------------------")       
-
-        for epoch_i in range(n_epochs_nl):
-            np.random.shuffle(randomizer_nl)
-            eps_nl_rand = self.eps_nl_train[randomizer_nl]
-            sig_nl_rand = self.sig_nl_train[randomizer_nl]
-
-            for (inps1, inps2) in zip(eps_nl_rand, sig_nl_rand):
-                eps = [inps1]
-                sig = [inps2]
-                self.sess.run(self.optimizer_nl, feed_dict = {self.EPS:eps, self.SIG:sig})
-            train_cost_nl = self.sess.run(self.train_nl, feed_dict={self.EPS: self.eps_nl_train, self.SIG: self.sig_nl_train})
-            test_cost_nl  = self.sess.run(self.train_nl, feed_dict={self.EPS: self.eps_nl_test, self.SIG: self.sig_nl_test})
-            summary = self.sess.run(self.merged_summaries, feed_dict={self.EPS: self.eps_nl_train, self.SIG: self.sig_nl_train})
-            self.writer.add_summary(summary, global_step = epoch_i)
-
-            self.sig_nl_eval = self.sess.run(self.SIG_PRED_NL, feed_dict={self.EPS:self.eps_nl_train})
-
-            print("EPOCH STEP:", epoch_i, "\n", \
-                  "-->",  "training_cost_nl =", train_cost_nl/self.eps_nl_train.shape[0], '\n', \
-                  "-->",  "testing_cost_nl  =", test_cost_nl/self.eps_nl_test.shape[0], "\n", \
-              "Trained Variables:")
-            print("    ", self.sess.run(self.vars_nl_limit))
-            
-            if np.abs(prev_train_cost_nl - train_cost_nl) < self.ml_settings['learn_crit_nl']:
-                epoch_nl = epoch_i
-                break
-            prev_train_cost_nl = train_cost_nl
 
         
     def _ResultPlot(self, component, eps_prev, sig_train, sig_eval, sig_prev):
@@ -323,8 +223,7 @@ class GraphClassic(object):
     def _PrintInfoModel(self):
         print(" MODEL TO PREDICT:")
         print("    Linear Elasticity Theory: ","<<", self.le_model_name, ">>")
-        print("    NonLinear Damage Model:   ","<<", self.damage_model_name, ">>", "\n",\
-               "------------------------------------------------------------------------------") 
+        print("------------------------------------------------------------------------------") 
 
     
     def _PrintInfoTrainingData(self):
@@ -333,9 +232,6 @@ class GraphClassic(object):
         print("    Linear Elastic:", "\n", \
               "        Training Set Size : ", "<<", self.eps_le_train.shape[0],  ">>", "States", "\n", \
               "        Testing Set Size  : ", "<<", self.eps_le_test.shape[0], ">>", "States")
-        print("    Nonlinear:", "\n", \
-              "        Training Set Size : ", "<<", self.eps_nl_train.shape[0],">>", "States" , "\n", \
-              "        Testing Set Size  : ", "<<", self.eps_nl_test.shape[0],">>",  "States")
         print(" ------------------------------------------------------------------------------")
 
     
@@ -346,23 +242,15 @@ class GraphClassic(object):
               "      --> Predicting Linear Stresses", "\n",\
               "      --> Loss Function with Input Stresses", "\n",\
               "      --> Optimize Linear Parameters to Minimize Loss")
-        print("    Nonlinear Damage Parameters:", "\n",\
-              "      --> Feeding Input Strains", "\n",\
-              "      --> Predicting Damage Stress", "\n",\
-              "      --> Loss Function with Input Stresses", "\n",\
-              "      --> Optimize Damage Parameters to Minimize Loss")
         print(" ------------------------------------------------------------------------------")
 
     
     def _PrintInfoVariableList(self):
         print(" VARIABLES TO OPTIMIZE")
-        print(" Total Number of Variables =", len(self.vars_le_plot) + len(self.vars_nl_plot))
+        print(" Total Number of Variables =", len(self.vars_le_plot))
         print("    Linear Elastic Variables")
         for i in range(len(self.vars_le_plot)):
             print("       -->", self.vars_le_plot[i])
-        print("    Nonlinear Damage Variables")            
-        for i in range(len(self.vars_nl_plot)):
-            print("       -->", self.vars_nl_plot[i])
         print(" ------------------------------------------------------------------------------")
     
     def _PrintInfoOptimizer(self):
@@ -371,10 +259,6 @@ class GraphClassic(object):
         print("        Optimizer:           ", self.ml_settings["optimizer_le"], '\n',\
               "       Learning Rate:       ", self.l_rate_le, '\n',\
               "       max number of epochs:", self.ml_settings["max_epoch_le"])
-        print("    Nonlinear Optimization: ")
-        print("        Optimizer:           ", self.ml_settings["optimizer_nl"], '\n',\
-              "       Learning Rate:       ", self.l_rate_nl, '\n',\
-              "       max number of epochs:", self.ml_settings["max_epoch_nl"])
         print(" ------------------------------------------------------------------------------")
     
     def _PrintInfoStartOptimizationLinear(self):
@@ -384,10 +268,6 @@ class GraphClassic(object):
         print("    Linear Elastic Parameters")
         print(" ------------------------------------------------------------------------------")
 
-    def _PrintInfoStartOptimizationDamage(self):
-        print(" ------------------------------------------------------------------------------")
-        print("    Damage Parameters")
-        print(" ------------------------------------------------------------------------------")
         
 
 

@@ -40,7 +40,7 @@
 		"EnergyMultiplier"					:   1.0,
 		"ControllerMultiplier"				:   1.0
 	},
-	"TensExpoSoftCompBezierHardSoft": {
+	"TensExpoSoftCompBezierHardSoft_saved": {
 		"CompressiveElasticLimit"			:	0.005,
 		"CompressiveStrength"				: 	0.0080,
 		"StrainCompressiveStrength"         :   0.007,
@@ -51,6 +51,21 @@
 		"CompressiveUltimateStrain"			:	0.04,
 		"BiaxialCompressiveStrength"		:	0.012,
 		"TensionStrength"					:	0.0035,
+		"TensionFractureEnergy"				:	0.1,
+		"StressMultiplier"					:   1000.0,
+		"EnergyMultiplier"					:   1.0
+	},
+	"TensExpoSoftCompBezierHardSoft": {
+		"CompressiveElasticLimit"			:	0.005,
+		"CompressiveStrength"				: 	0.0120,
+		"StrainCompressiveStrength"         :   0.01,
+		"JcontrolCompressiveStrain"			:   0.014,
+		"KcontrolCompressiveStrain"			:   0.02,
+		"KcontrolCompressiveStress"			:	0.007,
+		"CompressiveResidualStrength"		:   0.001,
+		"CompressiveUltimateStrain"			:	0.06,
+		"BiaxialCompressiveStrength"		:	0.014,
+		"TensionStrength"					:	0.0055,
 		"TensionFractureEnergy"				:	0.1,
 		"StressMultiplier"					:   1000.0,
 		"EnergyMultiplier"					:   1.0
