@@ -1,5 +1,11 @@
 import tensorflow as tf
 import numpy as np
+import sys
+
+from ConLawLearn.YieldCriteria.petracca_yield_criteria import *
+from ConLawLearn.YieldCriteria.lubliner_yield_criteria import *
+from ConLawLearn.YieldCriteria.drucker_prager_yield_criteria import *
+from ConLawLearn.YieldCriteria.rankine_yield_criteria import *
 
 # -----------------------------------------------------------------------------
 class YieldCriterion(object):
@@ -9,15 +15,11 @@ class YieldCriterion(object):
             k1 = 0.0
         '''
         def NegativeEquivalentStress(SIG_EFF, fc0, fcp, fcbi, ft):
-            k1 = tf.constant(0.0)
-            tau = YieldCriterion._Negative_Equivalent_Stress(SIG_EFF, \
-                                                      fc0, fcp, fcbi, ft, k1)
+            tau = NegativeEquivalentStressDruckerPrager(SIG_EFF, fc0, fcp, fcbi, ft)
             return tau
 
         def PositiveEquivalentStress(SIG_EFF, fcp, fcbi, ft):
-            tau = YieldCriterion._Positive_Equivalent_Stress(SIG_EFF,
-                                                          fcp, fcbi, ft)
-            return tau
+            YieldCriterion._Error_Message_Tension_Yield("Drucker Prager")
     # -------------------------------------------------------------------------
 
     class Lubliner(object):
@@ -25,35 +27,52 @@ class YieldCriterion(object):
             k1 = 1.0
         '''
         def NegativeEquivalentStress(SIG_EFF, fc0, fcp, fcbi, ft):
-            k1 = tf.constant(1.0)
-            tau = YieldCriterion._Negative_Equivalent_Stress(SIG_EFF, \
-                                                      fc0, fcp, fcbi, ft, k1)
+            tau = NegativeEquivalentStressLubliner(SIG_EFF, fc0, fcp, fcbi, ft)
             return tau
 
         def PositiveEquivalentStress(SIG_EFF, fcp, fcbi, ft):
-            tau = YieldCriterion._Positive_Equivalent_Stress(SIG_EFF,
-                                                          fcp, fcbi, ft)
-            return tau
+            YieldCriterion._Error_Message_Tension_Yield("Lubliner")
+            
     # -------------------------------------------------------------------------
 
     class Petracca(object):
-        ''' Petracca Modified Yield Criterion
+        ''' 
+            Petracca Modified Yield Criterion
             k1 = 0.16
         '''
         def NegativeEquivalentStress(SIG_EFF, fc0, fcp, fcbi, ft):
-            with tf.name_scope("PetraccaYieldNegative"):
-                k1 = tf.constant(0.16)
-                tau = YieldCriterion._Negative_Equivalent_Stress(SIG_EFF, \
-                                                      fc0, fcp, fcbi, ft, k1)
+            tau = NegativeEquivalentStressPetracca(SIG_EFF, fc0, fcp, fcbi, ft)
             return tau
 
         def PositiveEquivalentStress(SIG_EFF, fcp, fcbi, ft):
-            with tf.name_scope("PetraccaYieldPositive"):
-                tau = YieldCriterion._Positive_Equivalent_Stress(SIG_EFF,
-                                                          fcp, fcbi, ft)
+            tau = PositiveEquivalentStressPetracca(SIG_EFF, fcp, fcbi, ft)
             return tau
     # -------------------------------------------------------------------------
 
+    class Rankine(object):
+        ''' 
+            Rankine Yield Criteria
+        '''
+        def NegativeEquivalentStress():
+            negative_equivalent_stress = NegativeEquivalentStressRankine(SIG_EFF, fc0)
+            return negative_equivalent_stress
+
+        def PositiveEquivalentStress():
+            positive_equivalent_stress = PositiveEquivalentStressRankine(SIG_EFF, ft)
+            return positive_equivalent_stress
+
+    # -------------------------------------------------------------------------
+
+
+
+    def _Error_Message_Tension_Yield(name):
+        print(name, "Yield criteria is not implemented for tension")
+        print(" --> please choose for the TENSION Yield type one of the following:")
+        print("        - Rankine")
+        print("        - Petracca")
+        sys.exit()
+
+'''
     def SMAX(sig_eff):
         s1,s2 = YieldCriterion._s1_s2(sig_eff)
         smax = YieldCriterion._Smax(s1,s2)
@@ -329,3 +348,4 @@ class YieldCriterion(object):
         return term
    
 
+'''

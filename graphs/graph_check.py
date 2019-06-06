@@ -260,7 +260,7 @@ class GraphCheck(object):
 
     def _ProduceInputData(self):
         le_model_type = cll.ModelSettings.GetLinearElasticType(self.unity_settings)
-        print(le_model_type)
+        
         le_model_name = cll.ModelSettings.GetLinearElasticModelName(self.unity_settings)
 
         damage_model = cll.ModelSettings.GetDamageModel(self.unity_settings)
@@ -308,14 +308,11 @@ class GraphCheck(object):
 
         # Call the model linear and nonlinear model classes
         le_model = getattr(cll, le_model_name)
-        #le_model = getattr(ConLawL.ConstitutiveLaw(), le_model_name)
         nl_model = getattr(cll, damage_model_name)
-        #nl_model = getattr(ConLawL.ConstitutiveLaw(), damage_model_name)
 
         # Compute the Stresses
         SIG_EFF = le_model(vars_le_limit).GetStress(EPS)
         SIG_PRED_NL = nl_model(vars_le_limit, vars_nl_limit).GetStress(SIG_EFF)
-        #SIG_PRED_NL = nl_model(SIG_EFF, vars_le_limit, vars_nl_limit).GetStress
 
         # Initialize the Tensorflow Session
         init = tf.global_variables_initializer()

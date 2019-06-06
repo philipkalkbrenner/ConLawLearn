@@ -23,7 +23,7 @@
 "input_data_producuction": {
 	"number_of_directions"	: 5,
 	"number_of_lambda"		: 25,
-	"maximum_strain"		: 0.05,
-	"noise_factor"			: 1.0
+	"maximum_strain"		: 0.07,
+	"noise_factor"			: 0.0
 	}
 }

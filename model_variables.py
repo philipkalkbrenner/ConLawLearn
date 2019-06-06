@@ -37,6 +37,62 @@ class ModelVariables(object):
             with tf.name_scope('LinearElastic'):
                 tf.summary.scalar('YoungsModulus', variables['E'])
                 tf.summary.scalar('PoissonsRatio', variables['NU'])
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+    '''
+       Call the Property Variables for the TenLinSoft and CompLinSoft
+          A) Define Variables
+          B) Constrain Variables
+    '''
+    class LinSoftLinSoft(object):
+        def __init__(self, initial_values):
+            entries = initial_values['TensLinSoftCompLinSoft']
+            with tf.name_scope('DamageModelVariables'):
+                fcp = tf.Variable(entries['CompressiveStrength'], \
+                      name='CompressiveStrength')
+                fcpb = tf.Variable(entries['CompressiveBoundingStress'], \
+                      name='CompressiveBoundingStress')
+                fcbi = tf.Variable(entries['BiaxialCompressiveStrength'], \
+                      name='BiaxialCompressiveStrength')     
+                ft  = tf.Variable(entries['TensionStrength'], \
+                      name='TensionStrength')
+                ftb = tf.Variable(entries['TensionBoundingStress'], \
+                      name='TensionBoundingStress') 
+            self.Variables = [fcp, fcpb, ft, ftb, fcbi]
+            self.Vars4Print = ['Fcp:  Compressive Strength', \
+                               'Fcpb: Compressive Bounding Stress'
+                               'Fcbi: Biaxial Compressive Strength',\
+                               'Ft:   Tensile Strength',\
+                               'Ftb:  Tensile Bounding Stress']
+
+        def ConstrainVariables(variables, initial_values):
+            entries = initial_values['TensLinSoftCompLinSoft']
+            with tf.name_scope('ConstrainDamageVariables'):
+                tol_s = 1e-8
+                tol_g = 1e-8
+                inf = 1e+7
+
+                fcp  = tf.clip_by_value(variables[0],tol_s, inf)
+                fcpb = tf.clip_by_value(variables[1],tf.add(fcp, tol_s), inf)
+                fcbi = tf.clip_by_value(variables[4],tf.add(fcp, tol_s), inf)
+                ft   = tf.clip_by_value(variables[2],tol_s, inf)
+                ftb  = tf.clip_by_value(variables[3],tf.add(ft, tol_s), inf)
+            var_dict = {'FCP': fcp, 'FCPB': fcpb, 'FT': ft, 'FTB': ftb, 'FCBI': fcbi}
+            return var_dict
+
+    '''
+       Additional Class to initialize the Tensorflow Summaries of the 
+       TenExpoSoft and CompExpoSoft Properties 
+    '''        
+    class LinSoftLinSoftSummary(object):
+        def __init__(self, variables):
+            with tf.name_scope('DamageParameters'):
+                tf.summary.scalar('CompressiveStrength', variables['FCP'])
+                tf.summary.scalar('CompressiveBoundingStress', variables['FCPB'])
+                tf.summary.scalar('TensionStrength', variables['FT'])
+                tf.summary.scalar('TensionBoundingStress', variables['FTB'])
+                tf.summary.scalar('BiaxialCompressiveStrength', variables['FCBI'])
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

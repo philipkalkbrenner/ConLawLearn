@@ -5,11 +5,11 @@
 		"PoissonsRatio"						: 	0.2
 	},
 	"TensLinSoftCompLinSoft": {
-		"CompressiveStrength"				: 	12.0,
-		"BiaxialCompressiveStrength"		:	17.0,
-		"CompressiveBoundingStress"			:	24.0,
-		"TensionStrength"					:	5.0,
-		"TensionBoundingStress"				:	10.0
+		"CompressiveStrength"				: 	150.0,
+		"CompressiveBoundingStress"			:   300.0,
+		"BiaxialCompressiveStrength"		:	200.0,
+		"TensionStrength"					:	20.0,
+		"TensionBoundingStress"				:	40.0
 	},
 	"TensExpoSoftCompExpoSoft": {
 		"CompressiveStrength"				: 	0.12,

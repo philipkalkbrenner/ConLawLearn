@@ -9,30 +9,31 @@ from ConLawLearn.ConstitutiveLaws.linear_elastic_plane_strain import LinearElast
 '''
 Damage Laws with Petracca modified Lubliner Yield surface
 '''
-# exponential softneing (tension) & bezier hardening and softening (compression)
+# exponential softening (tension) & bezier hardening and softening (compression)
 from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_exposoft_neg_petracca_bezierhardsoft import PosPetraccaExpoSoftNegPetraccaBezierHardSoft
-# exponential softneing (tension) & parabolic hardening and exponential softening (compression)
+# exponential softening (tension) & parabolic hardening and exponential softening (compression)
 from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_exposoft_neg_petracca_parhardexposoft import PosPetraccaExpoSoftNegPetraccaParHardExpoSoft
-# exponential softneing (tension) & exponential softening (compression)
+# exponential softening (tension) & exponential softening (compression)
 from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_exposoft_neg_petracca_exposoft import PosPetraccaExpoSoftNegPetraccaExpoSoft
-
+# linear softening (tension) & linear softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_linsoft_neg_petracca_linsoft import PosPetraccaLinSoftNegPetraccaLinSoft
 
 '''
 Damage Laws with Lubliner Yield surface
 '''
 # exponential softneing (tension) & bezier hardening and softening (compression)
-from ConLawLearn.ConstitutiveLaws.damage_pos_lubliner_exposoft_neg_lubliner_bezierhardsoft import PosLublinerExpoSoftNegLublinerBezierHardSoft
+#from ConLawLearn.ConstitutiveLaws.damage_pos_lubliner_exposoft_neg_lubliner_bezierhardsoft import PosLublinerExpoSoftNegLublinerBezierHardSoft
 # exponential softneing (tension) & parabolic hardening and exponential softening (compression)
-from ConLawLearn.ConstitutiveLaws.damage_pos_lubliner_exposoft_neg_lubliner_parhardexposoft import PosLublinerExpoSoftNegLublinerParHardExpoSoft
+#from ConLawLearn.ConstitutiveLaws.damage_pos_lubliner_exposoft_neg_lubliner_parhardexposoft import PosLublinerExpoSoftNegLublinerParHardExpoSoft
 # exponential softneing (tension) & exponential softening (compression)
-from ConLawLearn.ConstitutiveLaws.damage_pos_lubliner_exposoft_neg_lubliner_exposoft import PosLublinerExpoSoftNegLublinerExpoSoft
+#from ConLawLearn.ConstitutiveLaws.damage_pos_lubliner_exposoft_neg_lubliner_exposoft import PosLublinerExpoSoftNegLublinerExpoSoft
 
 '''
 Damage Laws with Drucker Prager Yield surface
 '''
 # exponential softneing (tension) & bezier hardening and softening (compression)
-from ConLawLearn.ConstitutiveLaws.damage_pos_drucprag_exposoft_neg_drucprag_bezierhardsoft import PosDrucPragExpoSoftNegDrucPragBezierHardSoft
+#from ConLawLearn.ConstitutiveLaws.damage_pos_drucprag_exposoft_neg_drucprag_bezierhardsoft import PosDrucPragExpoSoftNegDrucPragBezierHardSoft
 # exponential softneing (tension) & parabolic hardening and exponential softening (compression)
-from ConLawLearn.ConstitutiveLaws.damage_pos_drucprag_exposoft_neg_drucprag_parhardexposoft import PosDrucPragExpoSoftNegDrucPragParHardExpoSoft
+#from ConLawLearn.ConstitutiveLaws.damage_pos_drucprag_exposoft_neg_drucprag_parhardexposoft import PosDrucPragExpoSoftNegDrucPragParHardExpoSoft
 # exponential softneing (tension) & exponential softening (compression)
-from ConLawLearn.ConstitutiveLaws.damage_pos_drucprag_exposoft_neg_drucprag_exposoft import PosDrucPragExpoSoftNegDrucPragExpoSoft
+#from ConLawLearn.ConstitutiveLaws.damage_pos_drucprag_exposoft_neg_drucprag_exposoft import PosDrucPragExpoSoftNegDrucPragExpoSoft
