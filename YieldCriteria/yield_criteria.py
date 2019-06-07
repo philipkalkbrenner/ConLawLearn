@@ -53,12 +53,12 @@ class YieldCriterion(object):
         ''' 
             Rankine Yield Criteria
         '''
-        def NegativeEquivalentStress():
-            negative_equivalent_stress = NegativeEquivalentStressRankine(SIG_EFF, fc0)
+        def NegativeEquivalentStress(effective_stress):
+            negative_equivalent_stress = NegativeEquivalentStressRankine(effective_stress)
             return negative_equivalent_stress
 
-        def PositiveEquivalentStress():
-            positive_equivalent_stress = PositiveEquivalentStressRankine(SIG_EFF, ft)
+        def PositiveEquivalentStress(effective_stress):
+            positive_equivalent_stress = PositiveEquivalentStressRankine(effective_stress)
             return positive_equivalent_stress
 
     # -------------------------------------------------------------------------

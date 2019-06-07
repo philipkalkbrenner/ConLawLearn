@@ -18,6 +18,71 @@ from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_exposoft_neg_petracca_expo
 # linear softening (tension) & linear softening (compression)
 from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_linsoft_neg_petracca_linsoft import PosPetraccaLinSoftNegPetraccaLinSoft
 
+
+'''
+Damage Laws with Rankine Yield surface
+'''
+# linear softening (tension) & linear softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_rankine_linsoft_neg_rankine_linsoft import PosRankineLinSoftNegRankineLinSoft
+
+
+'''
+Damage with Petracca modified Lubliner Yield surface in Tension and
+            Lubliner Yield surface in Compression
+'''
+# linear softening (tension) & linear softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_linsoft_neg_lubliner_linsoft import PosPetraccaLinSoftNegLublinerLinSoft
+
+
+'''
+Damage with Petracca modified Lubliner Yield surface in Tension and
+            Drucker Prager Yield surface in Compression
+'''
+# linear softening (tension) & linear softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_linsoft_neg_drucprag_linsoft import PosPetraccaLinSoftNegDrucPragLinSoft
+
+
+'''
+Damage with Petracca modified Lubliner Yield surface in Tension and
+            Rankine Yield surface in Compression
+'''
+# linear softening (tension) & linear softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_linsoft_neg_rankine_linsoft import PosPetraccaLinSoftNegRankineLinSoft
+
+
+'''
+Damage with Rankine Yield surface in Tension and
+            Petracca modified Lubliner Yield surface in Compression
+'''
+# linear softening (tension) & linear softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_rankine_linsoft_neg_petracca_linsoft import PosRankineLinSoftNegPetraccaLinSoft
+
+
+'''
+Damage with Rankine Yield surface in Tension and
+            Lubliner Yield surface in Compression
+'''
+# linear softening (tension) & linear softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_rankine_linsoft_neg_lubliner_linsoft import PosRankineLinSoftNegLublinerLinSoft
+
+
+'''
+Damage with Rankine Yield surface in Tension and
+            Drucker Prager Yield surface in Compression
+'''
+# linear softening (tension) & linear softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_rankine_linsoft_neg_drucprag_linsoft import PosRankineLinSoftNegDrucPragLinSoft
+
+
+
+
+
+
+
+
+
+
+
 '''
 Damage Laws with Lubliner Yield surface
 '''

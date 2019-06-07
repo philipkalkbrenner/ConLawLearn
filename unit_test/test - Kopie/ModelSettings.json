@@ -14,7 +14,7 @@
 	"optimizer_le1"	:	"AdamOptimizer",
 	"max_epoch_le"		:	200,
 	"learn_crit_le" :   1.0e-5,
-	"learn_rate_nl" :	0.000001,
+	"learn_rate_nl" :	0.01,
 	"optimizer_nl"	:	"AdamOptimizer",
 	"optimizer_nl2"	:	"AdadeltaOptimizer",
 	"optimizer_nl3"	:	"AdagradOptimizer",
@@ -28,8 +28,8 @@
 		"assumption"		:		"PlaneStress"
 			},
 	"non_linear"	: {
-		"yield_surf_ten"	:		"PosPetracca",
-		"yield_surf_comp"	:		"NegPetracca",
+		"yield_surf_ten"	:		"PosRankine",
+		"yield_surf_comp"	:		"NegRankine",
 		"damage_ten"		:		"LinSoft",
 		"damage_comp"		:		"LinSoft",
 		"bezier_settings"	:	{

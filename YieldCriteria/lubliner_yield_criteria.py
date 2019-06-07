@@ -3,7 +3,7 @@ import numpy as np
 
 from ConLawLearn.YieldCriteria.yield_criteria_utilities import YieldCriteriaUtilities
 
-def NegativeEquivalentLubliner(SIG_EFF, fc0, fcp, fcbi, ft):
+def NegativeEquivalentStressLubliner(SIG_EFF, fc0, fcp, fcbi, ft):
     with tf.name_scope("PetraccaYieldNegative"):
         k1 = tf.constant(1.0)
 

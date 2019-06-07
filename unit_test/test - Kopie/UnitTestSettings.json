@@ -5,8 +5,8 @@
 		"assumption"		:		"PlaneStress"
 			},
 	"non_linear"	: {
-		"yield_surf_ten"	:		"PosPetracca",
-		"yield_surf_comp"	:		"NegPetracca",
+		"yield_surf_ten"	:		"PosRankine",
+		"yield_surf_comp"	:		"NegRankine",
 		"damage_ten"		:		"LinSoft",
 		"damage_comp"		:		"LinSoft",
 		"bezier_settings"	:	{
@@ -23,7 +23,7 @@
 "input_data_producuction": {
 	"number_of_directions"	: 5,
 	"number_of_lambda"		: 25,
-	"maximum_strain"		: 0.07,
+	"maximum_strain"		: 0.2,
 	"noise_factor"			: 0.0
 	}
 }

@@ -61,7 +61,7 @@ class ModelVariables(object):
                       name='TensionBoundingStress') 
             self.Variables = [fcp, fcpb, ft, ftb, fcbi]
             self.Vars4Print = ['Fcp:  Compressive Strength', \
-                               'Fcpb: Compressive Bounding Stress'
+                               'Fcpb: Compressive Bounding Stress', \
                                'Fcbi: Biaxial Compressive Strength',\
                                'Ft:   Tensile Strength',\
                                'Ftb:  Tensile Bounding Stress']
