@@ -118,27 +118,28 @@ class GraphUnityTest(object):
             self.var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type + "WithFractureEnergy")
             self.vars_nl_plot = self.var_type_nl(self.init_var_values).Vars4Print
             if self.bezier_train_controllers =="No":
-                self.vars_nl_plot = vars_nl_plot[:-3]
+                self.vars_nl_plot = self.vars_nl_plot[:-3]
             
         elif self.bezier_energy_approach =="Off" and self.bezier_applied=="Yes":
-            var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type)
-            self.vars_nl_plot = var_type_nl(self.init_var_values).Vars4Print
+            self.var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type)
+            self.vars_nl_plot = self.var_type_nl(self.init_var_values).Vars4Print
         else:
             if self.bezier_applied == "Yes":
                 print(" WARNING: Error in ModelSettings.Json !!!", "\n",\
                 "Please define the comp_energy_approach in ModelSettings.json as On or Off!")
                 sys.exit()
             else:
-                var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type)
-                self.vars_nl_plot = var_type_nl(self.init_var_values).Vars4Print
+                self.var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type)
+                
+                self.vars_nl_plot = self.var_type_nl(self.init_var_values).Vars4Print
         
-        self.vars_nl = var_type_nl(self.init_var_values).Variables
+        self.vars_nl = self.var_type_nl(self.init_var_values).Variables
     
     
         if self.bezier_applied == "Yes":
-            self.vars_nl_limit = var_type_nl.ConstrainVariables(self.vars_nl, self.vars_le_limit, self.init_var_values)
+            self.vars_nl_limit = self.var_type_nl.ConstrainVariables(self.vars_nl, self.vars_le_limit, self.init_var_values)
         else:
-            self.vars_nl_limit = var_type_nl.ConstrainVariables(self.vars_nl, self.init_var_values)
+            self.vars_nl_limit = self.var_type_nl.ConstrainVariables(self.vars_nl, self.init_var_values)
         pass
 
     def _CallPredictedStresses(self):
@@ -272,7 +273,7 @@ class GraphUnityTest(object):
 
         unit_test_settings = self.unity_settings["input_data_producuction"]
 
-        epsilon_test = ConLawL.RandomStrainGenerator.GetRandomStrainForPlot()
+        epsilon_test = ConLawL.RandomStrainGenerator.GetRandomStrainForPlot(0.09)
         # Strains as Input for the Model to train
         epsilon = ConLawL.RandomStrainGenerator(unit_test_settings).GetStrain
 

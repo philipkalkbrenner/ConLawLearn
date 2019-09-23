@@ -273,7 +273,7 @@ class GraphCheck(object):
 
         unit_test_settings = self.unity_settings["input_data_producuction"]
 
-        epsilon_test = cll.RandomStrainGenerator.GetRandomStrainForPlot()
+        epsilon_test = cll.RandomStrainGenerator.GetRandomStrainForPlot(0.05)
         # Strains as Input for the Model to train
         epsilon = cll.RandomStrainGenerator(unit_test_settings).GetStrain
 

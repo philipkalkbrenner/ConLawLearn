@@ -44,14 +44,12 @@ class RandomStrainGenerator(object):
 
         epsilon = np.transpose(np.stack((eps_xx_tot,eps_yy_tot,gamma_xy_tot)))
         #np.random.shuffle(epsilon)
-        
 
         self.GetStrain = epsilon
 
-    def GetRandomStrainForPlot():
+    def GetRandomStrainForPlot(eps_max):
         number_of_directions = 1
         number_of_lambda     = 100
-        eps_max              = 0.05
 
         lowest = -np.pi
         uppermost = np.pi
@@ -64,7 +62,6 @@ class RandomStrainGenerator(object):
         Theta_comp = np.random.uniform(lowest, low_1, number_of_directions)
         Phi_comp = np.random.uniform(low_1, upper_1, number_of_directions)
 
-        #lambda_ = np.random.uniform(0,eps_max, number_of_lambda)
         lambda_ = np.arange(0,eps_max, eps_max/number_of_lambda)
         
         '''

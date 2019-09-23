@@ -4,10 +4,6 @@ from ConLawLearn.YieldCriteria import *
 from ConLawLearn.SofteningTypes import *
 from ConLawLearn.StressSplitter import *
 
-#from ConLawLearn.yield_criterions import YieldCriterion
-#from ConLawLearn.softening_types import SofteningType
-#from ConLawLearn.splitting_stress import EffectiveStressSplit
-
 '''
 The class to call the constitutive law for the:
     DAMAGE LAW with:

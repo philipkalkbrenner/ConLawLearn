@@ -3,6 +3,7 @@
     "resize_fac_stress"			: 1.0e-6,
 	"train_test_factor"			: 0.85,
 	"file_names"				: [],
+	"strain_file_names"			: [],
 	"last_undamaged_step"		: [],
 	"last_undamaged_step1"		: [],
 	"last_converged_step"		: []

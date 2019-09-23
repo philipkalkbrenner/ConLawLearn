@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
+import json
 #from ConLawLearn import ConLawL
 import ConLawLearn as ConLawL
 
@@ -65,9 +66,9 @@ class GraphClassic(object):
         self._RunTrainingLoopDamageModel()
 
 
-        #fig1 = self._ResultPlot(0, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
-        #fig2 = self._ResultPlot(1, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
-        #fig3 = self._ResultPlot(2, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
+        fig1 = self._ResultPlot(0, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
+        fig2 = self._ResultPlot(1, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
+        fig3 = self._ResultPlot(2, self.eps_le_train, self.sig_le_train, self.sig_le_eval, self.sig_le_prev)
 
         fig4 = self._ResultPlot(0, self.eps_nl_train, self.sig_nl_train, self.sig_nl_eval, self.sig_nl_prev)
         fig5 = self._ResultPlot(1, self.eps_nl_train, self.sig_nl_train, self.sig_nl_eval, self.sig_nl_prev)
@@ -95,9 +96,14 @@ class GraphClassic(object):
 
     def _ImportTrainingData(self):
         Inputs = ConLawL.TrainingInput(self.input_settings)
-        self.eps_le = Inputs.GetStrainsLinearElastic
+        if len(self.input_settings["strain_file_names"]) == 0:
+            self.eps_le = Inputs.GetStrainsLinearElastic
+            self.eps_nl = Inputs.GetStrainsNonlinear
+        else:
+            self.eps_le = Inputs.GetAppliedStrainsLinearElastic
+            self.eps_nl = Inputs.GetAppliedStrainsNonlinear
+
         self.sig_le = Inputs.GetStressesLinearElastic
-        self.eps_nl = Inputs.GetStrainsNonlinear
         self.sig_nl = Inputs.GetStressesNonlinear
 
         self.eps_le_train, self.eps_le_test, self.sig_le_train, self.sig_le_test = \
@@ -287,6 +293,20 @@ class GraphClassic(object):
                 epoch_nl = epoch_i
                 break
             prev_train_cost_nl = train_cost_nl
+
+        final_variable_values = self.sess.run(self.vars_nl_limit)
+        final_var_keys = []
+        for i in final_variable_values.keys():
+            final_var_keys.append(i)
+        print(final_var_keys[0])
+
+        dict_with_final_variables = {}
+        for i in range(len(final_var_keys)):
+            key_name = final_var_keys[i]
+            dict_with_final_variables[key_name] = str(final_variable_values[key_name])
+            
+        with open('OptimizedVariableValues.json', 'w') as write_variables:
+            json.dump(dict_with_final_variables, write_variables)
 
         
     def _ResultPlot(self, component, eps_prev, sig_train, sig_eval, sig_prev):

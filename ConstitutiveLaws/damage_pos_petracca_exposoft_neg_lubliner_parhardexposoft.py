@@ -9,11 +9,11 @@ The class to call the constitutive law for the:
     DAMAGE LAW with:
     Tension:        Petracca Yield Surface
                     Exponential Softening
-    Compression:    Petracca Yield Surface
-                    Exponential Softening
+    Compression:    Lubliner Yield Surface
+                    Parabolic Hardening & Exponential Softening
 '''
 
-class PosPetraccaExpoSoftNegPetraccaExpoSoft(object):
+class PosPetraccaExpoSoftNegLublinerParHardExpoSoft(object):
     def __init__(self, linear_variables, damage_variables):
         self.e    = linear_variables['E']
         self.fcp  = damage_variables['SP']
@@ -21,6 +21,9 @@ class PosPetraccaExpoSoftNegPetraccaExpoSoft(object):
         self.gc   = damage_variables['GC']
         self.ft   = damage_variables['FT']
         self.gt   = damage_variables['GT']
+        self.r0   = damage_variables['S0']
+        self.re   = self.fcp
+        self.rp   = damage_variables['SPP']
         
     def GetStress(self, effective_stress):
         '''
@@ -40,11 +43,11 @@ class PosPetraccaExpoSoftNegPetraccaExpoSoft(object):
             Compression Part
         '''
         with tf.name_scope("NegEquiStress"):           
-            equivalent_stress_neg = YieldCriterion.Petracca.NegativeEquivalentStress\
-                    (effective_stress, self.fcp, self.fcp, self.fcbi, self.ft)
+            equivalent_stress_neg = YieldCriterion.Lubliner.NegativeEquivalentStress\
+                    (effective_stress, self.r0, self.fcp, self.fcbi, self.ft)
         with tf.name_scope("NegDamVar"):
-            damage_neg   = SofteningType.ExponentialSoftening.GetDamageVariable\
-                    (equivalent_stress_neg, self.e, self.fcp, self.gc)
+            damage_neg   = SofteningType.ParabolicHardeningExponentialSoftening.GetDamageVariable\
+                    (equivalent_stress_neg, self.e, self.fcp, self.gc, self.r0, self.re, self.rp)
         with tf.name_scope("NegStressVector"):
             effective_stress_neg = EffectiveStressSplit.GetNegativeStress(effective_stress)
             stress_vector_neg = self.__compute_stress(damage_neg, effective_stress_neg)

@@ -1,6 +1,7 @@
 import numpy as np
 import json
 from random import sample
+import sys
 
 class TrainingInput(object):
 
@@ -9,11 +10,18 @@ class TrainingInput(object):
         self.tr_te_factor = input_settings["train_test_factor"] 
 
         self.input_names = input_settings["file_names"]
+        self.strain_input_names = input_settings["strain_file_names"]
+
+        if len(self.input_names) != len(self.strain_input_names):
+            print("ERROR: Check the lists of the file names and the strain file names to import, ", "\n",\
+            "their length must be equal!")
+            sys.exit()
 
         if len(self.input_names) != 0:
             dam_start_step = input_settings["last_undamaged_step"]
             last_step_conv = input_settings["last_utilized_step"]
         
+            # starting to import the values from the averaged segments
             eps_le = []
             sig_le = []
             eps_nl = []
@@ -29,14 +37,32 @@ class TrainingInput(object):
                     stress  = inp["Mean_Value_of_CAUCHY_STRESS_VECTOR"]["Segment_1"]
                     sig_le += stress[0:dam_start_step[i]]
                     sig_nl += stress[dam_start_step[i]:last_step_conv[i]]
+            
+            # here we import the values from the strain input file which present the applied strains
+            eps_le_applied = []
+            eps_nl_applied = []
+
+            for i in range(len(self.strain_input_names)):
+                with open(self.strain_input_names[i]) as strain_input_i:
+                    inp = json.load(strain_input_i)
+                    strains = inp["Applied_Strains_at_Boundary"]
+                    eps_le_applied += strains[0:dam_start_step[i]]
+                    eps_nl_applied += strains[dam_start_step[i]:last_step_conv[i]]
                 
             eps_le = np.asarray(eps_le, np.float32)
             sig_le = np.asarray(sig_le, np.float32)
             eps_nl = np.asarray(eps_nl, np.float32)
             sig_nl = np.asarray(sig_nl, np.float32)
+
+            eps_le_applied = np.asarray(eps_le_applied , np.float32)
+            eps_nl_applied = np.asarray(eps_nl_applied , np.float32)
         
             self.GetStrainsLinearElastic     = eps_le
             self.GetStrainsNonlinear         = eps_nl
+
+            self.GetAppliedStrainsLinearElastic = eps_le_applied
+            self.GetAppliedStrainsNonlinear     = eps_nl_applied
+
             self.GetStressesLinearElastic    = sig_le * self.resize_fac
             self.GetStressesNonlinear        = sig_nl * self.resize_fac
 

@@ -69,9 +69,9 @@ class ModelVariables(object):
         def ConstrainVariables(variables, initial_values):
             entries = initial_values['TensLinSoftCompLinSoft']
             with tf.name_scope('ConstrainDamageVariables'):
-                tol_s = 1e-8
-                tol_g = 1e-8
-                inf = 1e+7
+                tol_s = 1e-10
+                tol_g = 1e-10
+                inf = 1e+12
 
                 fcp  = tf.clip_by_value(variables[0],tol_s, inf)
                 fcpb = tf.clip_by_value(variables[1],tf.add(fcp, tol_s), inf)
@@ -126,9 +126,9 @@ class ModelVariables(object):
         def ConstrainVariables(variables, initial_values):
             entries = initial_values['TensExpoSoftCompExpoSoft']
             with tf.name_scope('ConstrainDamageVariables'):
-                tol_s = 1e-8
-                tol_g = 1e-8
-                inf = 1e+7
+                tol_s = 1e-10
+                tol_g = 1e-10
+                inf = 1e+12
                 energy_multi = entries['EnergyMultiplier']
                 stress_multi = entries['StressMultiplier']
 
@@ -196,9 +196,9 @@ class ModelVariables(object):
         def ConstrainVariables(variables,initial_values):
             entries = initial_values['TensExpoSoftCompParHardExpoSoft']
             with tf.name_scope('ConstrainDamageVariables'):
-                tol_s = 1e-8
-                tol_g = 1e-8
-                inf = 1e+7
+                tol_s = 1e-10
+                tol_g = 1e-10
+                inf = 1e+12
 
                 energy_multi = entries['EnergyMultiplier']
                 stress_multi = entries['StressMultiplier']
@@ -296,17 +296,18 @@ class ModelVariables(object):
             with tf.name_scope('ConstrainDamageVariables'):
                 entries = initial_values['TensExpoSoftCompBezierHardSoft']
 
-                tol_s = 1e-3
-                tol_e = 1e-4
-                tol_eps = 1e-5
-                tol_g = 1e-8
+                tol_s = 1e-10
+                tol_e = 1e-10
+                tol_eps = 1e-10
+                tol_g = 1e-10
                 inf   = 1e+12
 
                 stress_multi = entries["StressMultiplier"]
                 energy_multi = entries["EnergyMultiplier"]
 
                 sp  = tf.clip_by_value(tf.multiply(variables[5],stress_multi), tol_s, inf)
-                sbi = tf.clip_by_value(tf.multiply(variables[8],stress_multi), tol_s, inf)
+                #sbi = tf.clip_by_value(tf.multiply(variables[8],stress_multi), tol_s, inf)
+                sbi = tf.clip_by_value(tf.multiply(variables[8],stress_multi), sp * 1.05, inf)
                 s0  = tf.clip_by_value(tf.multiply(variables[4],stress_multi), tol_s, tf.subtract(sp, tol_s))
 
                 si = sp
@@ -625,9 +626,9 @@ class ModelVariables(object):
 
         def ConstrainVariables(variables, variables_le):
             with tf.name_scope('ConstrainDamageVariables'):
-                tol_s = 1e-3
-                tol_e = 1e-4
-                tol_g = 1e-8
+                tol_s = 1e-10
+                tol_e = 1e-10
+                tol_g = 1e-10
                 inf   = 1e+12
                 
                 ft = tf.clip_by_value(variables[5], tol_s, inf)

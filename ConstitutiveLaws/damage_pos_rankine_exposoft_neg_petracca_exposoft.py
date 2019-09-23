@@ -7,13 +7,13 @@ from ConLawLearn.StressSplitter import *
 '''
 The class to call the constitutive law for the:
     DAMAGE LAW with:
-    Tension:        Petracca Yield Surface
+    Tension:        Rankine Yield Surface
                     Exponential Softening
     Compression:    Petracca Yield Surface
                     Exponential Softening
 '''
 
-class PosPetraccaExpoSoftNegPetraccaExpoSoft(object):
+class PosRankineExpoSoftNegPetraccaExpoSoft(object):
     def __init__(self, linear_variables, damage_variables):
         self.e    = linear_variables['E']
         self.fcp  = damage_variables['SP']
@@ -27,8 +27,8 @@ class PosPetraccaExpoSoftNegPetraccaExpoSoft(object):
             Tension Part
         '''
         with tf.name_scope("PosEquiStress"):
-            equivalent_stress_pos = YieldCriterion.Petracca.PositiveEquivalentStress\
-                    (effective_stress, self.fcp, self.fcbi, self.ft)
+            equivalent_stress_pos = YieldCriterion.Rankine.PositiveEquivalentStress\
+                    (effective_stress)
         with tf.name_scope("PosDamVar"):
             damage_pos =   SofteningType.ExponentialSoftening.GetDamageVariable\
                     (equivalent_stress_pos, self.e, self.ft, self.gt)

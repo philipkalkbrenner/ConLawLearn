@@ -7,18 +7,30 @@ from ConLawLearn.StressSplitter import *
 '''
 The class to call the constitutive law for the:
     DAMAGE LAW with:
-    Tension:        Petracca Yield Surface
+    Tension:        Rankine Yield Surface
                     Exponential Softening
     Compression:    Petracca Yield Surface
-                    Exponential Softening
+                    Bezier Hardening & Softening
 '''
 
-class PosPetraccaExpoSoftNegPetraccaExpoSoft(object):
+class PosRankineExpoSoftNegPetraccaBezierHardSoft(object):
     def __init__(self, linear_variables, damage_variables):
         self.e    = linear_variables['E']
-        self.fcp  = damage_variables['SP']
+        self.e0   = damage_variables['E0']
+        self.ei   = damage_variables['EI']
+        self.ep   = damage_variables['EP']
+        self.ej   = damage_variables['EJ']
+        self.ek   = damage_variables['EK']
+        self.er   = damage_variables['ER']
+        self.eu   = damage_variables['EU']
+        self.s0   = damage_variables['S0']
+        self.si   = damage_variables['SI']
+        self.sp   = damage_variables['SP']
+        self.sj   = damage_variables['SJ']
+        self.sk   = damage_variables['SK']
+        self.sr   = damage_variables['SR']
+        self.su   = damage_variables['SU']
         self.fcbi = damage_variables['SBI']
-        self.gc   = damage_variables['GC']
         self.ft   = damage_variables['FT']
         self.gt   = damage_variables['GT']
         
@@ -27,8 +39,8 @@ class PosPetraccaExpoSoftNegPetraccaExpoSoft(object):
             Tension Part
         '''
         with tf.name_scope("PosEquiStress"):
-            equivalent_stress_pos = YieldCriterion.Petracca.PositiveEquivalentStress\
-                    (effective_stress, self.fcp, self.fcbi, self.ft)
+            equivalent_stress_pos = YieldCriterion.Rankine.PositiveEquivalentStress\
+                    (effective_stress)
         with tf.name_scope("PosDamVar"):
             damage_pos =   SofteningType.ExponentialSoftening.GetDamageVariable\
                     (equivalent_stress_pos, self.e, self.ft, self.gt)
@@ -41,10 +53,12 @@ class PosPetraccaExpoSoftNegPetraccaExpoSoft(object):
         '''
         with tf.name_scope("NegEquiStress"):           
             equivalent_stress_neg = YieldCriterion.Petracca.NegativeEquivalentStress\
-                    (effective_stress, self.fcp, self.fcp, self.fcbi, self.ft)
+                    (effective_stress, self.s0, self.sp, self.fcbi, self.ft)
         with tf.name_scope("NegDamVar"):
-            damage_neg   = SofteningType.ExponentialSoftening.GetDamageVariable\
-                    (equivalent_stress_neg, self.e, self.fcp, self.gc)
+            damage_neg   = SofteningType.BezierHardeningSoftening.GetDamageVariable\
+                    (equivalent_stress_neg, self.e, self.e0, self.ei, self.ep, \
+                    self.ej, self.ek, self.er, self.eu, \
+                    self.s0, self.si, self.sp, self.sj, self.sk, self.sr, self.su)
         with tf.name_scope("NegStressVector"):
             effective_stress_neg = EffectiveStressSplit.GetNegativeStress(effective_stress)
             stress_vector_neg = self.__compute_stress(damage_neg, effective_stress_neg)

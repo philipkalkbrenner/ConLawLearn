@@ -6,11 +6,11 @@
 			},
 	"non_linear"	: {
 		"yield_surf_ten"	:		"PosRankine",
-		"yield_surf_comp"	:		"NegRankine",
-		"damage_ten"		:		"LinSoft",
-		"damage_comp"		:		"LinSoft",
+		"yield_surf_comp"	:		"NegPetracca",
+		"damage_ten"		:		"ExpoSoft",
+		"damage_comp"		:		"BezierHardSoft",
 		"bezier_settings"	:	{
-			"applied?"				:		"No",
+			"applied?"				:		"Yes",
 			"comp_energy_approach"	:       "Off",
 			"train_controllers"		:		"No"
 				}

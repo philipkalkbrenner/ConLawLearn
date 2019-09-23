@@ -32,6 +32,12 @@ Damage with Petracca modified Lubliner Yield surface in Tension and
 '''
 # linear softening (tension) & linear softening (compression)
 from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_linsoft_neg_lubliner_linsoft import PosPetraccaLinSoftNegLublinerLinSoft
+# exponential softening (tension) & exponential softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_exposoft_neg_lubliner_exposoft import PosPetraccaExpoSoftNegLublinerExpoSoft
+# exponential softening (tension) & parabolic hardening and exponential softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_exposoft_neg_lubliner_parhardexposoft import PosPetraccaExpoSoftNegLublinerParHardExpoSoft
+# exponential softening (tension) & bezier hardening and softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_petracca_exposoft_neg_lubliner_bezierhardsoft import PosPetraccaExpoSoftNegLublinerBezierHardSoft
 
 
 '''
@@ -64,7 +70,12 @@ Damage with Rankine Yield surface in Tension and
 '''
 # linear softening (tension) & linear softening (compression)
 from ConLawLearn.ConstitutiveLaws.damage_pos_rankine_linsoft_neg_lubliner_linsoft import PosRankineLinSoftNegLublinerLinSoft
-
+# exponential softening (tension) & exponential softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_rankine_exposoft_neg_petracca_exposoft import PosRankineExpoSoftNegPetraccaExpoSoft
+# exponential softening (tension) & parabolic hardening and exponential softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_rankine_exposoft_neg_petracca_parhardexposoft import PosRankineExpoSoftNegPetraccaParHardExpoSoft
+# exponential softening (tension) & bezier hardening and softening (compression)
+from ConLawLearn.ConstitutiveLaws.damage_pos_rankine_exposoft_neg_petracca_bezierhardsoft import PosRankineExpoSoftNegPetraccaBezierHardSoft
 
 '''
 Damage with Rankine Yield surface in Tension and

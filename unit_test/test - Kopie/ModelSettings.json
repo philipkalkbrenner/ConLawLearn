@@ -3,6 +3,7 @@
     "resize_fac_stress"			: 1.0e-6,
 	"train_test_factor"			: 0.85,
 	"file_names"				: [],
+	"strain_file_names"		: [],
 	"last_undamaged_step"		: [],
 	"last_undamaged_step1"		: [],
 	"last_converged_step"		: []
@@ -14,11 +15,11 @@
 	"optimizer_le1"	:	"AdamOptimizer",
 	"max_epoch_le"		:	200,
 	"learn_crit_le" :   1.0e-5,
-	"learn_rate_nl" :	0.01,
+	"learn_rate_nl" :	0.000001,
 	"optimizer_nl"	:	"AdamOptimizer",
 	"optimizer_nl2"	:	"AdadeltaOptimizer",
 	"optimizer_nl3"	:	"AdagradOptimizer",
-	"max_epoch_nl"		:	500,
+	"max_epoch_nl"		:	100,
 	"learn_crit_nl" :   1.0e-5
 	
 		},
@@ -29,11 +30,11 @@
 			},
 	"non_linear"	: {
 		"yield_surf_ten"	:		"PosRankine",
-		"yield_surf_comp"	:		"NegRankine",
-		"damage_ten"		:		"LinSoft",
-		"damage_comp"		:		"LinSoft",
+		"yield_surf_comp"	:		"NegPetracca",
+		"damage_ten"		:		"ExpoSoft",
+		"damage_comp"		:		"BezierHardSoft",
 		"bezier_settings"	:	{
-			"applied?"				:		"No",
+			"applied?"				:		"Yes",
 			"comp_energy_approach"	:       "Off",
 			"train_controllers"		:		"No"
 				}

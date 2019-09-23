@@ -9,11 +9,11 @@ The class to call the constitutive law for the:
     DAMAGE LAW with:
     Tension:        Petracca Yield Surface
                     Exponential Softening
-    Compression:    Petracca Yield Surface
+    Compression:    Lubliner Yield Surface
                     Exponential Softening
 '''
 
-class PosPetraccaExpoSoftNegPetraccaExpoSoft(object):
+class PosPetraccaExpoSoftNegLublinerExpoSoft(object):
     def __init__(self, linear_variables, damage_variables):
         self.e    = linear_variables['E']
         self.fcp  = damage_variables['SP']
@@ -40,7 +40,7 @@ class PosPetraccaExpoSoftNegPetraccaExpoSoft(object):
             Compression Part
         '''
         with tf.name_scope("NegEquiStress"):           
-            equivalent_stress_neg = YieldCriterion.Petracca.NegativeEquivalentStress\
+            equivalent_stress_neg = YieldCriterion.Lubliner.NegativeEquivalentStress\
                     (effective_stress, self.fcp, self.fcp, self.fcbi, self.ft)
         with tf.name_scope("NegDamVar"):
             damage_neg   = SofteningType.ExponentialSoftening.GetDamageVariable\
