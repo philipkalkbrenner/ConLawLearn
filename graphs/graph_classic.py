@@ -96,12 +96,8 @@ class GraphClassic(object):
 
     def _ImportTrainingData(self):
         Inputs = ConLawL.TrainingInput(self.input_settings)
-        if len(self.input_settings["strain_file_names"]) == 0:
-            self.eps_le = Inputs.GetStrainsLinearElastic
-            self.eps_nl = Inputs.GetStrainsNonlinear
-        else:
-            self.eps_le = Inputs.GetAppliedStrainsLinearElastic
-            self.eps_nl = Inputs.GetAppliedStrainsNonlinear
+        self.eps_le = Inputs.GetStrainsLinearElastic
+        self.eps_nl = Inputs.GetStrainsNonlinear
 
         self.sig_le = Inputs.GetStressesLinearElastic
         self.sig_nl = Inputs.GetStressesNonlinear
