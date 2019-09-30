@@ -113,6 +113,7 @@ class GraphUnityTest(object):
         vars_le = var_type_le(self.init_var_values).Variables
         vars_le_plot = var_type_le(self.init_var_values).Vars4Print
         self.vars_le_limit = var_type_le.ConstrainVariables(vars_le, self.init_var_values)
+        self.learning_rates_le = var_type_le(self.init_var_values).LearningRates
 
         if self.bezier_energy_approach =="On" and self.bezier_applied =="Yes":
             self.var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type + "WithFractureEnergy")
@@ -134,6 +135,7 @@ class GraphUnityTest(object):
                 self.vars_nl_plot = self.var_type_nl(self.init_var_values).Vars4Print
         
         self.vars_nl = self.var_type_nl(self.init_var_values).Variables
+        self.learning_rates_nl = self.var_type_nl(self.init_var_values).LearningRates
     
     
         if self.bezier_applied == "Yes":
@@ -159,14 +161,42 @@ class GraphUnityTest(object):
         pass
     
     def _ConstructOptimizer(self):
-        self.l_rate_nl = self.ml_settings["learn_rate_nl"]
-        optim_nl = getattr(tf.train, self.ml_settings["optimizer_nl"])
-        if self.bezier_applied == "Yes" and self.bezier_energy_approach == "On" \
-            and self.bezier_train_controllers == "No":
-            self.optimizer_nl  = optim_nl(self.l_rate_nl).minimize(self.train_nl, var_list = self.vars_nl[:-3])
+        '''
+        Construction of the optimizer:
+        A) Train all Variables at same step with same learning rate 
+           (one step each optimization , is batched)
+        B) Train each Variable separately with different training rates 
+           (n steps each optimization, is batched, n = number of variables)
+        '''
+        self.optimizer_nl = []
+
+        if self.ml_settings["train_seperately_nl?"] == "No":
+            self.l_rate_nl = self.ml_settings["learn_rate_nl"]
+            optim_nl = getattr(tf.train, self.ml_settings["optimizer_nl"])
+            if self.bezier_applied == "Yes" and self.bezier_energy_approach == "On" \
+                and self.bezier_train_controllers == "No":
+                self.optimizer_nl.append(optim_nl(self.l_rate_nl).minimize(self.train_nl, var_list = self.vars_nl[:-3]))
+            else:
+                self.optimizer_nl.append(optim_nl(self.l_rate_nl).minimize(self.train_nl, var_list = self.vars_nl))
+            pass
+        elif self.ml_settings["train_seperately_nl?"] == "Yes":
+            self.l_rate_nl = self.ml_settings["learn_rate_nl"]
+            self.learning_rates_nl = [i * self.l_rate_nl for i in self.learning_rates_nl]
+            optim_nl = getattr(tf.train, self.ml_settings["optimizer_nl"])
+            if self.bezier_applied == "Yes" and self.bezier_energy_approach == "On" \
+                and self.bezier_train_controllers == "No":
+                for i in range(len(self.vars_nl) - 3):
+                    optimizer_i = optim_nl(self.learning_rates_nl[i]). minimize(self.train_nl, var_list = self.vars_nl[i])
+                    self.optimizer_nl.append(optimizer_i)
+            else:
+                for i in range(len(self.vars_nl)):
+                    optimizer_i = optim_nl(self.learning_rates_nl[i]). minimize(self.train_nl, var_list = self.vars_nl[i])
+                    self.optimizer_nl.append(optimizer_i)
+            pass
         else:
-            self.optimizer_nl  = optim_nl(self.l_rate_nl).minimize(self.train_nl, var_list = self.vars_nl)
-        pass
+            print("Error: Please define if you want to train the nonlinear damage variables in seperate steps or not!", "\n", \
+            "By indicating it with <<Yes>> or <<No>> in the train_seperately_nl? field.")
+            sys.exit()
     
     def _ConstructSummaryWriter(self):
         with tf.name_scope('AllSummaries'):
@@ -205,7 +235,9 @@ class GraphUnityTest(object):
             for (inps1, inps2) in zip(eps_nl_rand, sig_nl_rand):
                 eps = [inps1]
                 sig = [inps2]
-                self.sess.run(self.optimizer_nl, feed_dict = {self.EPS:eps, self.SIG:sig})
+                for optimizer_i in range(len(self.optimizer_nl)):
+                    self.sess.run(self.optimizer_nl[optimizer_i], feed_dict = {self.EPS:eps, self.SIG:sig})
+                #self.sess.run(self.optimizer_nl, feed_dict = {self.EPS:eps, self.SIG:sig})
         
             train_cost_nl = self.sess.run(self.train_nl, feed_dict={self.EPS: self.eps_nl_train, self.SIG: self.sig_nl_train})
             test_cost_nl  = self.sess.run(self.train_nl, feed_dict={self.EPS: self.eps_nl_test, self.SIG: self.sig_nl_test})

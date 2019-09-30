@@ -11,18 +11,20 @@
 	"last_converged_step"		: []
 	},
 "machine_learning_settings": {
-	"learn_rate_le" :	0.010,
-	"optimizer_le"	:	"AdadeltaOptimizer",
-	"optimizer_le1"	:	"AdagradOptimizer",
-	"optimizer_le1"	:	"AdamOptimizer",
-	"max_epoch_le"		:	200,
-	"learn_crit_le" :   1.0e-5,
-	"learn_rate_nl" :	0.000001,
-	"optimizer_nl"	:	"AdamOptimizer",
-	"optimizer_nl2"	:	"AdadeltaOptimizer",
-	"optimizer_nl3"	:	"AdagradOptimizer",
-	"max_epoch_nl"		:	500,
-	"learn_crit_nl" :   1.0e-5
+	"train_seperately_le?":	"No",
+	"learn_rate_le":		0.010,
+	"optimizer_le":			"AdadeltaOptimizer",
+	"optimizer_le1":		"AdagradOptimizer",
+	"optimizer_le1":		"AdamOptimizer",
+	"max_epoch_le":			200,
+	"learn_crit_le":	   	1.0e-5,
+	"train_seperately_nl?":	"No",
+	"learn_rate_nl":		0.00001,
+	"optimizer_nl":			"AdamOptimizer",
+	"optimizer_nl2":		"AdadeltaOptimizer",
+	"optimizer_nl3":		"AdagradOptimizer",
+	"max_epoch_nl":			5000,
+	"learn_crit_nl":   		1.0e-5
 	
 		},
 "optimization_model_data": {

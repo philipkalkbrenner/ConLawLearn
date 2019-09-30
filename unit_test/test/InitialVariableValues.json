@@ -1,81 +1,190 @@
 {
 	"LinearElastic": {
-		"YoungsModulusTemp" 				:   0.270,
-		"YoungsModulusMultiplier"			: 	10000.0,
-		"PoissonsRatio"						: 	0.2
+		"YoungsModulusTemp": {
+			"initial_value":	0.270,
+			"learning_rate":	0.1
+		},
+		"PoissonsRatio": {
+			"initial_value":	0.2,
+			"learning_rate":	0.1
+		},
+		"YoungsModulusMultiplier": 	10000.0
+		
 	},
 	"TensLinSoftCompLinSoft": {
-		"CompressiveStrength"				: 	0.15,
-		"CompressiveBoundingStress"			:   0.30,
-		"BiaxialCompressiveStrength"		:	0.20,
-		"TensionStrength"					:	0.02,
-		"TensionBoundingStress"				:	0.04,
+		"CompressiveStrength": {
+			"initial_value":	0.15,
+			"learning_rate":	0.1
+		},
+		"CompressiveBoundingStress": {
+			"initial_value":	0.30,
+			"learning_rate":	0.1
+		},
+		"BiaxialCompressiveStrength": {
+			"initial_value":	0.20,
+			"learning_rate":	0.1
+		},
+		"TensionStrength": {
+			"initial_value":	0.02,
+			"learning_rate":	0.1
+		},
+		"TensionBoundingStress": {
+			"initial_value":	0.04,
+			"learning_rate":	0.1
+		},
 		"StressMultiplier"					:   100.0
 	},
 	"TensExpoSoftCompExpoSoft": {
-		"CompressiveStrength"				: 	0.15,
-		"BiaxialCompressiveStrength"		:	0.20,
-		"CompressiveFractureEnergy"			:	0.2,
-		"TensionStrength"					:	0.02,
-		"TensionFractureEnergy"				:	0.05,
-		"EnergyMultiplier"					:   1.0,
-		"StressMultiplier"					:   100.0
+		"CompressiveStrength": {
+			"initial_value":	0.15,
+			"learning_rate":	0.1
+		},
+		"BiaxialCompressiveStrength": {
+			"initial_value":	0.20,
+			"learning_rate":	0.1
+		},
+		"CompressiveFractureEnergy": {
+			"initial_value":	0.2,
+			"learning_rate":	0.1
+		},
+		"TensionStrength": {
+			"initial_value":	0.02,
+			"learning_rate":	0.1
+		},
+		"TensionFractureEnergy": {
+			"initial_value":	0.05,
+			"learning_rate":	0.1
+		},
+		"EnergyMultiplier":   1.0,
+		"StressMultiplier":   100.0
 	},
 	"TensExpoSoftCompParHardExpoSoft": {
-		"CompressiveElasticLimit"			:	0.06,
-		"CompressiveStrength"				: 	0.12,
-		"CompressiveVirtualPeakStrength"	:   0.15,
-		"BiaxialCompressiveStrength"		:	0.17,
-		"CompressiveFractureEnergy"			:	0.5,
-		"TensionStrength"					:	0.02,
-		"TensionFractureEnergy"				:	0.08,
-		"EnergyMultiplier"					:   1.0,
-		"StressMultiplier"					:   100.0
+		"CompressiveElasticLimit": {
+			"initial_value":	0.06,
+			"learning_rate":	0.1
+		},
+		"CompressiveStrength": {
+			"initial_value":	0.12,
+			"learning_rate":	0.1
+		},
+		"CompressiveVirtualPeakStrength": {
+			"initial_value":	0.15,
+			"learning_rate":	0.1
+		},
+		"BiaxialCompressiveStrength": {
+			"initial_value":	0.17,
+			"learning_rate":	0.1
+		},
+		"CompressiveFractureEnergy": {
+			"initial_value":	0.5,
+			"learning_rate":	0.1
+		},
+		"TensionStrength": {
+			"initial_value":	0.02,
+			"learning_rate":	0.1
+		},
+		"TensionFractureEnergy": {
+			"initial_value":	0.08,
+			"learning_rate":	0.1
+		},
+		"EnergyMultiplier":   1.0,
+		"StressMultiplier":   100.0
 	},
 	"TensExpoSoftCompBezierHardSoftWithFractureEnergy": {
-		"CompressiveElasticLimit"			:	0.005,
-		"CompressiveStrength"				: 	0.0080,
-		"StrainCompressiveStrength"         :   0.006,
-		"CompressiveResidualStrength"		:   0.001,
-		"BiaxialCompressiveStrength"		:	0.014,
-		"CompressiveFractureEnergy"			:   0.25,
-		"TensionStrength"					:	0.0035,
-		"TensionFractureEnergy"				:	0.1,
-		"BezierControllerC1"				:   0.65,
-		"BezierControllerC2"				:   0.55,
-		"BezierControllerC3"				:   1.5,
-		"StressMultiplier"					:   1000.0,
-		"EnergyMultiplier"					:   1.0,
-		"ControllerMultiplier"				:   1.0
-	},
-	"TensExpoSoftCompBezierHardSoft_saved": {
-		"CompressiveElasticLimit"			:	0.005,
-		"CompressiveStrength"				: 	0.0080,
-		"StrainCompressiveStrength"         :   0.007,
-		"JcontrolCompressiveStrain"			:   0.01,
-		"KcontrolCompressiveStrain"			:   0.014,
-		"KcontrolCompressiveStress"			:	0.007,
-		"CompressiveResidualStrength"		:   0.001,
-		"CompressiveUltimateStrain"			:	0.04,
-		"BiaxialCompressiveStrength"		:	0.012,
-		"TensionStrength"					:	0.0035,
-		"TensionFractureEnergy"				:	0.1,
-		"StressMultiplier"					:   1000.0,
-		"EnergyMultiplier"					:   1.0
+		"CompressiveElasticLimit": {
+			"initial_value":	0.005,
+			"learning_rate":	0.1
+		},
+		"CompressiveStrength": {
+			"initial_value":	0.008,
+			"learning_rate":	0.1
+		},
+		"StrainCompressiveStrength": {
+			"initial_value":	0.006,
+			"learning_rate":	0.1
+		},
+		"CompressiveResidualStrength": {
+			"initial_value":	0.001,
+			"learning_rate":	0.1
+		},
+		"BiaxialCompressiveStrength": {
+			"initial_value":	0.014,
+			"learning_rate":	0.1
+		},
+		"CompressiveFractureEnergy": {
+			"initial_value":	0.25,
+			"learning_rate":	0.1
+		},
+		"TensionStrength": {
+			"initial_value":	0.0035,
+			"learning_rate":	0.1
+		},
+		"TensionFractureEnergy":{
+			"initial_value":	0.1,
+			"learning_rate":	0.1
+		},
+		"BezierControllerC1": {
+			"initial_value":	0.65,
+			"learning_rate":	0.1
+		},
+		"BezierControllerC2": {
+			"initial_value":	0.55,
+			"learning_rate":	0.1
+		},
+		"BezierControllerC3": {
+			"initial_value":	1.5,
+			"learning_rate":	0.1
+		},
+		"StressMultiplier":			1000.0,
+		"EnergyMultiplier":   		1.0,
+		"ControllerMultiplier":   	1.0
 	},
 	"TensExpoSoftCompBezierHardSoft": {
-		"CompressiveElasticLimit"			:	0.005,
-		"CompressiveStrength"				: 	0.0120,
-		"StrainCompressiveStrength"         :   0.01,
-		"JcontrolCompressiveStrain"			:   0.014,
-		"KcontrolCompressiveStrain"			:   0.02,
-		"KcontrolCompressiveStress"			:	0.007,
-		"CompressiveResidualStrength"		:   0.001,
-		"CompressiveUltimateStrain"			:	0.06,
-		"BiaxialCompressiveStrength"		:	0.014,
-		"TensionStrength"					:	0.0055,
-		"TensionFractureEnergy"				:	0.1,
-		"StressMultiplier"					:   1000.0,
-		"EnergyMultiplier"					:   1.0
+		"CompressiveElasticLimit": {
+			"initial_value":	0.005,
+			"learning_rate":	0.1
+		},
+		"CompressiveStrength": {
+			"initial_value":	0.012,
+			"learning_rate":	0.1
+		},
+		"StrainCompressiveStrength": {
+			"initial_value":	0.01,
+			"learning_rate":	0.1
+		},
+		"JcontrolCompressiveStrain": {
+			"initial_value":	0.014,
+			"learning_rate":	0.1
+		},
+		"KcontrolCompressiveStrain": {
+			"initial_value":	0.02,
+			"learning_rate":	0.1
+		},
+		"KcontrolCompressiveStress": {
+			"initial_value":	0.007,
+			"learning_rate":	0.1
+		},
+		"CompressiveResidualStrength": {
+			"initial_value":	0.001,
+			"learning_rate":	0.1
+		},
+		"CompressiveUltimateStrain": {
+			"initial_value":	0.06,
+			"learning_rate":	0.1
+		},
+		"BiaxialCompressiveStrength": {
+			"initial_value":	0.014,
+			"learning_rate":	0.1
+		},
+		"TensionStrength": {
+			"initial_value":	0.00550,
+			"learning_rate":	0.1
+		},
+		"TensionFractureEnergy": {
+			"initial_value":	0.1,
+			"learning_rate":	0.1
+		},
+		"StressMultiplier":   1000.0,
+		"EnergyMultiplier":   1.0
 	}
 }

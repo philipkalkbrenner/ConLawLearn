@@ -11,13 +11,17 @@ class ModelVariables(object):
         def __init__(self, initial_values):
             entries = initial_values['LinearElastic']
             with tf.name_scope('ModelVariables'):
-                e = tf.Variable(entries['YoungsModulusTemp'], \
+                e = tf.Variable(entries['YoungsModulusTemp']['initial_value'], \
                 name='YoungsModulusTemp')
                 e_multiplier = tf.constant(entries['YoungsModulusMultiplier'], \
                 name='YoungsModulusMultiplier')
-                nu = tf.Variable(entries['PoissonsRatio'],name='PoissonsRatio')
+                nu = tf.Variable(entries['PoissonsRatio']['initial_value'],name='PoissonsRatio')
             self.Variables = [e, nu]
             self.Vars4Print = ['E:   Youngs Modulus', 'Nu:  Poissons Ratio']
+            self.LearningRates = [
+                entries['YoungsModulusTemp']['learning_rate'], \
+                entries['PoissonsRatio']['initial_value']
+            ]
     
         def ConstrainVariables(variables, initial_values):
             entries = initial_values['LinearElastic']
@@ -49,15 +53,15 @@ class ModelVariables(object):
         def __init__(self, initial_values):
             entries = initial_values['TensLinSoftCompLinSoft']
             with tf.name_scope('DamageModelVariables'):
-                fcp = tf.Variable(entries['CompressiveStrength'], \
+                fcp = tf.Variable(entries['CompressiveStrength']['initial_value'], \
                       name='CompressiveStrength')
-                fcpb = tf.Variable(entries['CompressiveBoundingStress'], \
+                fcpb = tf.Variable(entries['CompressiveBoundingStress']['initial_value'], \
                       name='CompressiveBoundingStress')
-                fcbi = tf.Variable(entries['BiaxialCompressiveStrength'], \
+                fcbi = tf.Variable(entries['BiaxialCompressiveStrength']['initial_value'], \
                       name='BiaxialCompressiveStrength')     
-                ft  = tf.Variable(entries['TensionStrength'], \
+                ft  = tf.Variable(entries['TensionStrength']['initial_value'], \
                       name='TensionStrength')
-                ftb = tf.Variable(entries['TensionBoundingStress'], \
+                ftb = tf.Variable(entries['TensionBoundingStress']['initial_value'], \
                       name='TensionBoundingStress') 
             self.Variables = [fcp, fcpb, ft, ftb, fcbi]
             self.Vars4Print = ['Fcp:  Compressive Strength', \
@@ -65,6 +69,13 @@ class ModelVariables(object):
                                'Fcbi: Biaxial Compressive Strength',\
                                'Ft:   Tensile Strength',\
                                'Ftb:  Tensile Bounding Stress']
+            self.LearningRates = [                                     \
+                entries['CompressiveStrength']['learning_rate'],       \
+                entries['CompressiveBoundingStress']['learning_rate'], \
+                entries['TensionStrength']['learning_rate'],           \
+                entries['TensionBoundingStress']['learning_rate'],     \
+                entries['BiaxialCompressiveStrength']['learning_rate'] \
+            ]
 
         def ConstrainVariables(variables, initial_values):
             entries = initial_values['TensLinSoftCompLinSoft']
@@ -106,15 +117,15 @@ class ModelVariables(object):
         def __init__(self, initial_values):
             entries = initial_values['TensExpoSoftCompExpoSoft']
             with tf.name_scope('DamageModelVariables'):
-                sp  = tf.Variable(entries['CompressiveStrength'], \
+                sp  = tf.Variable(entries['CompressiveStrength']['initial_value'], \
                       name='CompressiveStrength')
-                sbi = tf.Variable(entries['BiaxialCompressiveStrength'], \
+                sbi = tf.Variable(entries['BiaxialCompressiveStrength']['initial_value'], \
                       name='BiaxialCompressiveStrength')
-                gc  = tf.Variable(entries['CompressiveFractureEnergy'], \
+                gc  = tf.Variable(entries['CompressiveFractureEnergy']['initial_value'], \
                       name='CompressiveFractureEnergy')
-                ft  = tf.Variable(entries['TensionStrength'], \
+                ft  = tf.Variable(entries['TensionStrength']['initial_value'], \
                       name='TensionStrength')
-                gt  = tf.Variable(entries['TensionFractureEnergy'], \
+                gt  = tf.Variable(entries['TensionFractureEnergy']['initial_value'], \
                       name='TensionFractureEnergy')
             self.Variables = [sp, sbi, gc, ft, gt]
             self.Vars4Print = ['Sp:  Compressive Strength', \
@@ -122,6 +133,13 @@ class ModelVariables(object):
                                'Gc:  Fracture Energy Compression', \
                                'Ft:  Tensile Strength',\
                                'Gt:  Fracture Energy Tension']
+            self.LearningRates = [                                      \
+                entries['CompressiveStrength']['learning_rate'],        \
+                entries['BiaxialCompressiveStrength']['learning_rate'], \
+                entries['CompressiveFractureEnergy']['learning_rate'],  \
+                entries['TensionStrength']['learning_rate'],            \
+                entries['TensionFractureEnergy']['learning_rate']       \
+            ]
 
         def ConstrainVariables(variables, initial_values):
             entries = initial_values['TensExpoSoftCompExpoSoft']
@@ -170,19 +188,19 @@ class ModelVariables(object):
         def __init__(self, initial_values):
             entries = initial_values['TensExpoSoftCompParHardExpoSoft']
             with tf.name_scope('DamageModelVariables'):
-                s0  = tf.Variable(entries['CompressiveElasticLimit'], \
+                s0  = tf.Variable(entries['CompressiveElasticLimit']['initial_value'], \
                       name='ElasticCompressionLimit')
-                sp  = tf.Variable(entries['CompressiveStrength'],\
+                sp  = tf.Variable(entries['CompressiveStrength']['initial_value'],\
                       name='CompressiveStrength')
-                spp = tf.Variable(entries['CompressiveVirtualPeakStrength'],\
+                spp = tf.Variable(entries['CompressiveVirtualPeakStrength']['initial_value'],\
                       name='CompressiveVirtualPeakStrength')
-                sbi = tf.Variable(entries['BiaxialCompressiveStrength'],\
+                sbi = tf.Variable(entries['BiaxialCompressiveStrength']['initial_value'],\
                       name='BiaxialCompressiveStrength')
-                gc  = tf.Variable(entries['CompressiveFractureEnergy'],\
+                gc  = tf.Variable(entries['CompressiveFractureEnergy']['initial_value'],\
                       name='CompressiveFractureEnergy')
-                ft  = tf.Variable(entries['TensionStrength'],\
+                ft  = tf.Variable(entries['TensionStrength']['initial_value'],\
                       name='TensionStrength')
-                gt  = tf.Variable(entries['TensionFractureEnergy'],\
+                gt  = tf.Variable(entries['TensionFractureEnergy']['initial_value'],\
                       name='TensionFractureEnergy')
             self.Variables = [s0, sp, spp, sbi, gc, ft, gt]
             self.Vars4Print = ['S0:  Compressive Elastic Limit',\
@@ -192,6 +210,15 @@ class ModelVariables(object):
                                'Gc:  Fracture Energy Compression', \
                                'Ft:  Tensile Strength',\
                                'Gt:  Fracture Energy Tension']
+            self.LearningRates = [                                             \
+                entries['CompressiveElasticLimit']['learning_rate'],           \
+                entries['CompressiveStrength']['learning_rate'],               \
+                entries['Compressive Virtual Peak Strength']['learning_rate'], \
+                entries['BiaxialCompressiveStrength']['learning_rate'],        \
+                entries['CompressiveFractureEnergy']['learning_rate'],         \
+                entries['TensionStrength']['learning_rate'],                   \
+                entries['TensionFractureEnergy']['learning_rate']              \
+            ]
 
         def ConstrainVariables(variables,initial_values):
             entries = initial_values['TensExpoSoftCompParHardExpoSoft']
@@ -256,27 +283,27 @@ class ModelVariables(object):
         def __init__(self, initial_values):
             entries = initial_values['TensExpoSoftCompBezierHardSoft']
             with tf.name_scope('DamageModelVariables'):
-                ep = tf.Variable(entries['StrainCompressiveStrength'], \
+                ep = tf.Variable(entries['StrainCompressiveStrength']['initial_value'], \
                      name = 'StrainCompressiveStrength')
-                ej = tf.Variable(entries['JcontrolCompressiveStrain'], \
+                ej = tf.Variable(entries['JcontrolCompressiveStrain']['initial_value'], \
                      name = 'JcontrolCompressiveStrain')
-                ek = tf.Variable(entries['KcontrolCompressiveStrain'], \
+                ek = tf.Variable(entries['KcontrolCompressiveStrain']['initial_value'], \
                      name = 'KcontrolCompressiveStrain')
-                eu = tf.Variable(entries['CompressiveUltimateStrain'], \
+                eu = tf.Variable(entries['CompressiveUltimateStrain']['initial_value'], \
                      name = 'CompressiveUltimateStrain')
-                s0 = tf.Variable(entries['CompressiveElasticLimit'], \
+                s0 = tf.Variable(entries['CompressiveElasticLimit']['initial_value'], \
                      name='CompressiveElasticLimit')
-                sp = tf.Variable(entries['CompressiveStrength'], \
+                sp = tf.Variable(entries['CompressiveStrength']['initial_value'], \
                      name='CompressiveStrength')
-                sk = tf.Variable(entries['KcontrolCompressiveStress'], \
+                sk = tf.Variable(entries['KcontrolCompressiveStress']['initial_value'], \
                      name='KcontrolCompressiveStress')
-                sr = tf.Variable(entries['CompressiveResidualStrength'], \
+                sr = tf.Variable(entries['CompressiveResidualStrength']['initial_value'], \
                      name = 'CompressiveResidualStrength')
-                sbi = tf.Variable(entries['BiaxialCompressiveStrength'], \
+                sbi = tf.Variable(entries['BiaxialCompressiveStrength']['initial_value'], \
                      name = 'BiaxialCompressiveStrength')
-                ft = tf.Variable(entries['TensionStrength'],\
+                ft = tf.Variable(entries['TensionStrength']['initial_value'],\
                      name='TensionStrength')
-                gt = tf.Variable(entries['TensionFractureEnergy'],\
+                gt = tf.Variable(entries['TensionFractureEnergy']['initial_value'],\
                      name='TensionFractureEnergy')
 
             self.Variables = [ep, ej, ek, eu, s0, sp, sk, sr, sbi, ft, gt]
@@ -291,6 +318,19 @@ class ModelVariables(object):
                                'Sbi: Biaxial Compressive Strength', \
                                'Ft:  Tensile Strength',\
                                'Gt:  Fracture Energy Tension']
+            self.LearningRates = [                                       \
+                entries['StrainCompressiveStrength']['learning_rate'],   \
+                entries['JcontrolCompressiveStrain']['learning_rate'],   \
+                entries['KcontrolCompressiveStrain']['learning_rate'],   \
+                entries['CompressiveUltimateStrain']['learning_rate'],   \
+                entries['CompressiveElasticLimit']['learning_rate'],     \
+                entries['CompressiveStrength']['learning_rate'],         \
+                entries['KcontrolCompressiveStress']['learning_rate'],   \
+                entries['CompressiveResidualStrength']['learning_rate'], \
+                entries['BiaxialCompressiveStrength']['learning_rate'],  \
+                entries['TensionStrength']['learning_rate'],             \
+                entries['TensionFractureEnergy']['learning_rate']        \
+            ]
 
         def ConstrainVariables(variables, variables_le, initial_values):
             with tf.name_scope('ConstrainDamageVariables'):
@@ -396,25 +436,25 @@ class ModelVariables(object):
         def __init__(self, initial_values):
             entries = initial_values['TensExpoSoftCompBezierHardSoftWithFractureEnergy']
             with tf.name_scope('DamageModelVariables'):
-                ep = tf.Variable(entries['StrainCompressiveStrength'], \
+                ep = tf.Variable(entries['StrainCompressiveStrength']['initial_value'], \
                      name = 'StrainCompressiveStrength')
-                s0 = tf.Variable(entries['CompressiveElasticLimit'], \
+                s0 = tf.Variable(entries['CompressiveElasticLimit']['initial_value'], \
                      name='CompressiveElasticLimit')
-                sp = tf.Variable(entries['CompressiveStrength'], \
+                sp = tf.Variable(entries['CompressiveStrength']['initial_value'], \
                      name='CompressiveStrength')
-                sr = tf.Variable(entries['CompressiveResidualStrength'], \
+                sr = tf.Variable(entries['CompressiveResidualStrength']['initial_value'], \
                      name = 'CompressiveResidualStrength')
-                sbi = tf.Variable(entries['BiaxialCompressiveStrength'], \
+                sbi = tf.Variable(entries['BiaxialCompressiveStrength']['initial_value'], \
                      name = 'BiaxialCompressiveStrength')
-                gc = tf.Variable(entries['CompressiveFractureEnergy'], \
+                gc = tf.Variable(entries['CompressiveFractureEnergy']['initial_value'], \
                      name = "CompressionFractureEnergy")
-                ft = tf.Variable(entries['TensionStrength'], \
+                ft = tf.Variable(entries['TensionStrength']['initial_value'], \
                      name='TensionStrength')
-                gt = tf.Variable(entries['TensionFractureEnergy'], \
+                gt = tf.Variable(entries['TensionFractureEnergy']['initial_value'], \
                      name='TensionFractureEnergy')
-                c1 = tf.Variable(entries['BezierControllerC1'], name = 'C_1')
-                c2 = tf.Variable(entries['BezierControllerC2'], name = 'C_2')
-                c3 = tf.Variable(entries['BezierControllerC3'], name = 'C_3')
+                c1 = tf.Variable(entries['BezierControllerC1']['initial_value'], name = 'C_1')
+                c2 = tf.Variable(entries['BezierControllerC2']['initial_value'], name = 'C_2')
+                c3 = tf.Variable(entries['BezierControllerC3']['initial_value'], name = 'C_3')
 
             self.Variables = [ep, s0, sp, sr, sbi, gc, ft, gt, c1, c2, c3]
             self.Vars4Print = ['Ep:  Strain Compressive Strength', 
@@ -428,6 +468,19 @@ class ModelVariables(object):
                                'C1:  BezierControllerC1', \
                                'C2:  BezierControllerC2', \
                                'C3:  BezierControllerC3']
+            self.LearningRates = [                                       \
+                entries['StrainCompressiveStrength']['learning_rate'],   \
+                entries['CompressiveElasticLimit']['learning_rate'],     \
+                entries['CompressiveStrength']['learning_rate'],         \
+                entries['CompressiveResidualStrength']['learning_rate'], \
+                entries['BiaxialCompressiveStrength']['learning_rate'],  \
+                entries['CompressiveFractureEnergy']['learning_rate'],   \
+                entries['TensionStrength']['learning_rate'],             \
+                entries['TensionFractureEnergy']['learning_rate'],       \
+                entries['BezierControllerC1']['learning_rate'],          \
+                entries['BezierControllerC2']['learning_rate'],          \
+                entries['BezierControllerC3']['learning_rate']           \
+            ]
 
         def ConstrainVariables(variables, variables_le, initial_values):
             with tf.name_scope('ConstrainDamageVariables'):
@@ -595,22 +648,22 @@ class ModelVariables(object):
         def __init__(self, initial_values):
             entries = initial_values['TensExpoSoftCompBezierHardSoftControlled']
             with tf.name_scope('DamageModelVariables'):
-                c1 = tf.Variable(entries['ControllerC1'], name = 'C_1')
-                c2 = tf.Variable(entries['ControllerC2'], name = 'C_2')
-                c3 = tf.Variable(entries['ControllerC3'], name = 'C_3')
-                s0 = tf.Variable(entries['CompressiveElasticLimit'], \
+                c1 = tf.Variable(entries['ControllerC1']['initial_value'], name = 'C_1')
+                c2 = tf.Variable(entries['ControllerC2']['initial_value'], name = 'C_2')
+                c3 = tf.Variable(entries['ControllerC3']['initial_value'], name = 'C_3')
+                s0 = tf.Variable(entries['CompressiveElasticLimit']['initial_value'], \
                      name='CompressiveElasticLimit')
-                sp = tf.Variable(entries['CompressiveStrength'], \
+                sp = tf.Variable(entries['CompressiveStrength']['initial_value'], \
                      name='CompressiveStrength')
-                sr = tf.Variable(entries['CompressiveResidualStrength'], \
+                sr = tf.Variable(entries['CompressiveResidualStrength']['initial_value'], \
                      name = 'CompressiveResidualStrength')
-                sbi = tf.Variable(entries['BiaxialCompressiveStrength'], \
+                sbi = tf.Variable(entries['BiaxialCompressiveStrength']['initial_value'], \
                      name = 'BiaxialCompressiveStrength')
-                ep = tf.Variable(entries['StrainCompressiveStrength'], \
+                ep = tf.Variable(entries['StrainCompressiveStrength']['initial_value'], \
                      name = 'StrainCompressiveStrength')
-                ft  = tf.Variable(entries['TensionStrength'], \
+                ft  = tf.Variable(entries['TensionStrength']['initial_value'], \
                      name='TensionStrength')
-                gt  = tf.Variable(entries['TensionFractureEnergy'],\
+                gt  = tf.Variable(entries['TensionFractureEnergy']['initial_value'],\
                      name='TensionFractureEnergy')
             self.Variables= [s0, sp, sr, sbi, ep, ft, gt, c1, c2, c3]
             self.Vars4Print = ['Ep:  Strain Compressive Strength',\
@@ -623,6 +676,18 @@ class ModelVariables(object):
                                'C1:  Bezier Controller 1',\
                                'C2:  Bezier Controller 2', \
                                'C3:  Bezier Controller 3']
+            self.LearningRates = [                                       \
+                entries['CompressiveElasticLimit']['learning_rate'],     \
+                entries['CompressiveStrength']['learning_rate'],         \
+                entries['CompressiveResidualStrength']['learning_rate'], \
+                entries['BiaxialCompressiveStrength']['learning_rate'],  \
+                entries['StrainCompressiveStrength']['learning_rate'],   \
+                entries['TensionStrength']['learning_rate'],             \
+                entries['TensionFractureEnergy']['learning_rate'],       \
+                entries['ControllerC1']['learning_rate'],                \
+                entries['ControllerC2']['learning_rate'],                \
+                entries['ControllerC3']['learning_rate']                 \
+            ]
 
         def ConstrainVariables(variables, variables_le):
             with tf.name_scope('ConstrainDamageVariables'):
