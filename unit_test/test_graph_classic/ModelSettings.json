@@ -1,13 +1,20 @@
 {
 "input_settings":{
-    "resize_fac_stress": 	1.0e-6,
-	"train_test_factor": 	0.85,
-	"data_collection": 		"unit_test",
-	"strain_data": 			"unit_test",
-	"file_names": 			[],
-	"strain_file_names": 	[],
-	"last_undamaged_step": 	[],
-	"last_converged_step":	[]
+	"resize_fac_stress": 	1.0e-6,
+	"train_test_factor":	0.9,
+	"data_collection": 		"manual",
+	"strain_data": 			"from_boundary",
+	"file_names": [
+		"average_wall_total_all_neg_07.json",
+		"average_wall_total_all_pos_09.json"
+		],
+	"strain_file_names": [
+		"boundary_applied_strains_all_neg_07.json",
+		"boundary_applied_strains_all_pos_09.json"
+		],
+	"last_undamaged_step": 	[25,22],
+	"last_utilized_step": 	[260,210],
+	"splitting_criterion": 	0.00001
 	},
 "machine_learning_settings": {
 	"seperated_variable_training":	true,
@@ -20,7 +27,7 @@
 		"learn_crit":		1.0e-9
 		},
 	"nonlinear_damage_model": {
-		"learning_rate":	0.0001,
+		"learning_rate":	0.00001,
 		"optimizer_1":		"AdadeltaOptimizer",
 		"optimizer_2":		"AdagradOptimizer",
 		"optimizer":		"AdamOptimizer",
@@ -29,25 +36,25 @@
 		}
 	},
 "optimization_model_data": {
-	"linear_elastic": {
-		"type":			"LinearElastic",
+	"linear_elastic"	: {
+		"type":	"LinearElastic",
 		"assumption":	"PlaneStress"
 			},
 	"non_linear"	: {
-		"yield_surf_ten":	"PosPetracca",
+		"yield_surf_ten":	"PosRankine",
 		"yield_surf_comp":	"NegPetracca",
 		"damage_ten":		"ExpoSoft",
 		"damage_comp":		"BezierHardSoft",
-		"bezier_settings":{
+		"bezier_settings": 	{
 			"comp_energy_approach":	false
 				}
 			}
 		},
 "graph_settings": {
-	"graph_name":	"GraphUnityTest",
-	"py_module": 	"graph_unity_test"
-	},
+	"graph_name": 	"GraphClassic",
+	"py_module":	"graph_classic"
+},
 "post_settings":{
-	"tensorboard_logdir": "C:/Users/Philip/Desktop/output_name"
+	"tensorboard_logdir": "C:/MyPythonApplications/ConLawLearn/unit_test/test_graph_classic"
 	}
 }

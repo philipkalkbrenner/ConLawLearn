@@ -87,12 +87,15 @@ class GraphClassic(object):
 
     def _InitializeDamageModel(self):
         damage_model = ConLawL.ModelSettings.GetDamageModel(self.model_settings)
+
+        self.compression_damage_model_type = ConLawL.ModelSettings.GetDamageTypeCompression(self.model_settings)
+        self.tension_damage_model_type = ConLawL.ModelSettings.GetDamageTypeTension(self.model_settings)
+
         self.damage_model_type =  ConLawL.ModelSettings.GetDamageModelType(self.model_settings)
         self.damage_model_name = ConLawL.ModelSettings.GetDamageModelName(self.model_settings)
-
-        self.bezier_applied = damage_model["bezier_settings"]["applied?"]
+        
+        ''' In case of Bezier Application in damage law, the energy approach of the ML is available'''
         self.bezier_energy_approach = damage_model["bezier_settings"]["comp_energy_approach"]
-        self.bezier_train_controllers = damage_model["bezier_settings"]["train_controllers"]
 
     def _ImportTrainingData(self):
         Inputs = ConLawL.TrainingInput(self.input_settings)
@@ -119,31 +122,39 @@ class GraphClassic(object):
                 self.vars_le = var_type_le(self.init_var_values).Variables
                 self.vars_le_plot = var_type_le(self.init_var_values).Vars4Print
                 self.vars_le_limit = var_type_le.ConstrainVariables(self.vars_le, self.init_var_values)
+                self.learning_rates_le = var_type_le(self.init_var_values).LearningRates
+                self.train_or_not_le = var_type_le(self.init_var_values).TrainRequest
+
+                if len(self.vars_le) == len(self.learning_rates_le) and len(self.vars_le) == len(self.train_or_not_le):
+                    self.vars_le = [ b for a, b in zip(self.train_or_not_le, self.vars_le) if a ]
+                    self.learning_rates_le = [ b for a, b in zip(self.train_or_not_le, self.learning_rates_le) if a ]
+                else:
+                    print("Something is wrong with the Variable list lengths of the linear model, they are not equal!")
+                    sys.exit()
             
             with tf.name_scope("DamageModelVariables"):
-                if self.bezier_energy_approach == "On" and self.bezier_applied =="Yes":
-                    var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type + "WithFractureEnergy")
-                    self.vars_nl_plot = var_type_nl(self.init_var_values).Vars4Print
-                    if bezier_train_controllers =="No":
-                        self.vars_nl_plot = self.vars_nl_plot[:-3]
-                elif self.bezier_energy_approach =="Off" and self.bezier_applied=="Yes":
-                    var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type)
-                    self.vars_nl_plot = var_type_nl(self.init_var_values).Vars4Print
-                else:
-                    if self.bezier_applied == "Yes":
-                        print(" WARNING: Error in ModelSettings.Json !!!", "\n",\
-                        "Please define the comp_energy_approach in ModelSettings.json as On or Off!")
-                        sys.exit()
-                    else:
-                        var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type)
-                        self.vars_nl_plot = var_type_nl(self.init_var_values).Vars4Print
 
-                self.vars_nl = var_type_nl(self.init_var_values).Variables
-            
-                if self.bezier_applied == "Yes":
-                    self.vars_nl_limit = var_type_nl.ConstrainVariables(self.vars_nl, self.vars_le_limit,  self.init_var_values)
+                if self.compression_damage_model_type == "BezierHardSoft" and self.bezier_energy_approach == True:
+                    self.var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type + "WithFractureEnergy")
+                else: 
+                    self.var_type_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type)
+
+                self.vars_nl_plot = self.var_type_nl(self.init_var_values).Vars4Print    
+                self.vars_nl = self.var_type_nl(self.init_var_values).Variables
+                self.learning_rates_nl = self.var_type_nl(self.init_var_values).LearningRates
+                self.train_or_not_nl = self.var_type_nl(self.init_var_values).TrainRequest
+
+                if self.compression_damage_model_type == "BezierHardSoft":
+                    self.vars_nl_limit = self.var_type_nl.ConstrainVariables(self.vars_nl, self.vars_le_limit, self.init_var_values)
                 else:
-                    self.vars_nl_limit = var_type_nl.ConstrainVariables(vars_nl)
+                    self.vars_nl_limit = self.var_type_nl.ConstrainVariables(self.vars_nl, self.init_var_values)
+                
+                if len(self.vars_nl) == len(self.learning_rates_nl) and len(self.vars_nl) == len(self.train_or_not_nl):
+                    self.vars_nl = [ b for a, b in zip(self.train_or_not_nl, self.vars_nl) if a ]
+                    self.learning_rates_nl = [ b for a, b in zip(self.train_or_not_nl, self.learning_rates_nl) if a ]
+                else:
+                    print("Something is wrong with the Variable list lengths of the nonlinear model, they are not equal!")
+                    sys.exit()
 
     def _CallPredictedStresses(self):
         with tf.name_scope("LinearElasticLaw"):
@@ -164,31 +175,61 @@ class GraphClassic(object):
                                             self.SIG)), name = "Cost_nl")
 
     def _ConstructOptimizer(self):
+        '''
+        Construction of the optimizer:
+        A) Train all Variables at same step with same learning rate 
+           (one step each optimization , is batched)
+        B) Train each Variable separately with different training rates 
+           (n steps each optimization, is batched, n = number of variables)
+        '''
         with tf.name_scope("Optimization"):
-            self.l_rate_le = self.ml_settings["learn_rate_le"]
-            optim_le = getattr(tf.train, self.ml_settings["optimizer_le"])
-            self.optimizer_le  = optim_le(self.l_rate_le).minimize(self.train_le, var_list = self.vars_le)
 
-            self.l_rate_nl = self.ml_settings["learn_rate_nl"]
-            optim_nl = getattr(tf.train, self.ml_settings["optimizer_nl"])
-            if self.bezier_applied == "Yes" and self.bezier_energy_approach == "On" \
-                and bezier_train_controllers == "No":
-                self.optimizer_nl  = optim_nl(self.l_rate_nl).minimize(self.train_nl, var_list = self.vars_nl[:-3])
+            self.l_rate_le = self.ml_settings['linear_elastic_model']["learning_rate"]
+            optim_le = getattr(tf.train, self.ml_settings['linear_elastic_model']["optimizer"])
+            self.optimizer_le = []
+
+            if self.ml_settings["seperated_variable_training"] == False:
+                self.optimizer_le.append(optim_le(self.l_rate_le).minimize(self.train_le, var_list = self.vars_le))
+            elif self.ml_settings["seperated_variable_training"] == True:
+                self.learning_rates_le = [i * self.l_rate_le for i in self.learning_rates_le]
+                for i in range(len(self.vars_le)):
+                    optimizer_i = optim_le(self.learning_rates_le[i]). minimize(self.train_le, var_list = self.vars_le[i])
+                    self.optimizer_le.append(optimizer_i)
             else:
-               self.optimizer_nl  = optim_nl(self.l_rate_nl).minimize(self.train_nl, var_list = self.vars_nl)
-    
+                print("Error: Please define if you want to train the linear variables in seperate steps or not!", "\n", \
+                "By indicating it with <<Yes>> or <<No>> in the train_seperately_le? field.")
+                sys.exit()
+
+
+            self.l_rate_nl = self.ml_settings['nonlinear_damage_model']['learning_rate']
+            optim_nl = getattr(tf.train, self.ml_settings['nonlinear_damage_model']['optimizer'])
+            self.optimizer_nl = []
+
+            if self.ml_settings["seperated_variable_training"] == False:
+                self.optimizer_nl.append(optim_nl(self.l_rate_nl).minimize(self.train_nl, var_list = self.vars_nl))
+            elif self.ml_settings["seperated_variable_training"] == True:
+                self.learning_rates_nl = [i * self.l_rate_nl for i in self.learning_rates_nl]
+                for i in range(len(self.vars_nl)):
+                    optimizer_i = optim_nl(self.learning_rates_nl[i]). minimize(self.train_nl, var_list = self.vars_nl[i])
+                    self.optimizer_nl.append(optimizer_i)
+            else:
+                print("Error: Please define if you want to train the nonlinear damage variables in seperate steps or not!", "\n", \
+                "By indicating it with <<Yes>> or <<No>> in the train_seperately_nl? field.")
+                sys.exit()
+
     def _ConstructSummaryWriter(self):
         with tf.name_scope('AllSummaries'):
             sum_writer_le = getattr(ConLawL.ModelVariables(), self.le_model_type + "Summary")
             sum_writer_le(self.vars_le_limit)
-            if self.bezier_applied == "Yes" and self.bezier_energy_approach == "On":
-                sum_writer_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type + \
+
+            if self.compression_damage_model_type == "BezierHardSoft" and self.bezier_energy_approach == True:
+                self.sum_writer_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type + \
                                     "WithFractureEnergy" + "Summary")
             else:
-                sum_writer_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type + \
+                self.sum_writer_nl = getattr(ConLawL.ModelVariables(), self.damage_model_type + \
                                 "Summary")
-            sum_writer_nl(self.vars_nl_limit)
-    
+            self.sum_writer_nl(self.vars_nl_limit)
+
     def _GlobalOpGraphStart(self):
         with tf.name_scope("GlobalOps"):
             self.init = tf.global_variables_initializer()
@@ -201,7 +242,7 @@ class GraphClassic(object):
         self.sess.run(self.init)
     
     def _RunTrainingLoopLinearModel(self):
-        n_epochs_le = self.ml_settings["max_epoch_le"]
+        n_epochs_le = self.ml_settings['linear_elastic_model']['max_epoch']
     
         prev_train_cost_le = 0.0
         eps_le_prev = self.eps_le_train
@@ -223,7 +264,9 @@ class GraphClassic(object):
             for (inps1, inps2) in zip(eps_le_rand, sig_le_rand):
                 eps = [inps1]
                 sig = [inps2]
-                self.sess.run(self.optimizer_le, feed_dict = {self.EPS:eps, self.SIG:sig})
+                for opt_le_i in range(len(self.optimizer_le)):
+                    self.sess.run(self.optimizer_le[opt_le_i], feed_dict = {self.EPS:eps, self.SIG:sig}) 
+
             train_cost_le = self.sess.run(self.train_le, feed_dict={self.EPS: self.eps_le_train, self.SIG: self.sig_le_train})
             test_cost_le  = self.sess.run(self.train_le, feed_dict={self.EPS: self.eps_le_test, self.SIG: self.sig_le_test})
             summary = self.sess.run(self.merged_summaries, feed_dict={self.EPS: self.eps_le_train, self.SIG: self.sig_le_train})
@@ -239,7 +282,7 @@ class GraphClassic(object):
             print(" ------------------------------------------------------------------------------")
             
             actual_tolerance = np.abs(prev_train_cost_le - train_cost_le)
-            if actual_tolerance < self.ml_settings['learn_crit_le']:
+            if actual_tolerance < self.ml_settings['linear_elastic_model']['learn_crit']:
                 epoch_le = epoch_i
                 break
             prev_train_cost_le = train_cost_le
@@ -249,7 +292,7 @@ class GraphClassic(object):
 
     def _RunTrainingLoopDamageModel(self):
 
-        n_epochs_nl = self.ml_settings["max_epoch_nl"]
+        n_epochs_nl = self.ml_settings['nonlinear_damage_model']['max_epoch']
 
         prev_train_cost_nl = 0.0
         self.sig_nl_prev = self.sess.run(self.SIG_PRED_NL, feed_dict={self.EPS:self.eps_nl_train})
@@ -271,7 +314,9 @@ class GraphClassic(object):
             for (inps1, inps2) in zip(eps_nl_rand, sig_nl_rand):
                 eps = [inps1]
                 sig = [inps2]
-                self.sess.run(self.optimizer_nl, feed_dict = {self.EPS:eps, self.SIG:sig})
+                for opt_nl_i in range(len(self.optimizer_nl)):
+                    self.sess.run(self.optimizer_nl[opt_nl_i], feed_dict = {self.EPS:eps, self.SIG:sig})
+                #self.sess.run(self.optimizer_nl, feed_dict = {self.EPS:eps, self.SIG:sig})
             train_cost_nl = self.sess.run(self.train_nl, feed_dict={self.EPS: self.eps_nl_train, self.SIG: self.sig_nl_train})
             test_cost_nl  = self.sess.run(self.train_nl, feed_dict={self.EPS: self.eps_nl_test, self.SIG: self.sig_nl_test})
             summary = self.sess.run(self.merged_summaries, feed_dict={self.EPS: self.eps_nl_train, self.SIG: self.sig_nl_train})
@@ -285,7 +330,7 @@ class GraphClassic(object):
               "Trained Variables:")
             print("    ", self.sess.run(self.vars_nl_limit))
             
-            if np.abs(prev_train_cost_nl - train_cost_nl) < self.ml_settings['learn_crit_nl']:
+            if np.abs(prev_train_cost_nl - train_cost_nl) < self.ml_settings['nonlinear_damage_model']['learn_crit']:
                 epoch_nl = epoch_i
                 break
             prev_train_cost_nl = train_cost_nl
@@ -384,13 +429,13 @@ class GraphClassic(object):
     def _PrintInfoOptimizer(self):
         print(" GRADIENT OPTIMIZATION")
         print("    Linear Elastic Optimization: ")
-        print("        Optimizer:           ", self.ml_settings["optimizer_le"], '\n',\
+        print("        Optimizer:           ", self.ml_settings['linear_elastic_model']['optimizer'], '\n',\
               "       Learning Rate:       ", self.l_rate_le, '\n',\
-              "       max number of epochs:", self.ml_settings["max_epoch_le"])
+              "       max number of epochs:", self.ml_settings['linear_elastic_model']['max_epoch'])
         print("    Nonlinear Optimization: ")
-        print("        Optimizer:           ", self.ml_settings["optimizer_nl"], '\n',\
+        print("        Optimizer:           ", self.ml_settings['nonlinear_damage_model']['optimizer'], '\n',\
               "       Learning Rate:       ", self.l_rate_nl, '\n',\
-              "       max number of epochs:", self.ml_settings["max_epoch_nl"])
+              "       max number of epochs:", self.ml_settings['nonlinear_damage_model']['max_epoch'])
         print(" ------------------------------------------------------------------------------")
     
     def _PrintInfoStartOptimizationLinear(self):

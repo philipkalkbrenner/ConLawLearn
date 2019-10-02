@@ -2,10 +2,12 @@
 	"LinearElastic": {
 		"YoungsModulusTemp": {
 			"initial_value":	0.270,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"PoissonsRatio": {
 			"initial_value":	0.2,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"YoungsModulusMultiplier": 	10000.0
@@ -14,22 +16,27 @@
 	"TensExpoSoftCompExpoSoft": {
 		"CompressiveStrength": {
 			"initial_value":	0.12,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"BiaxialCompressiveStrength": {
 			"initial_value":	0.17,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"CompressiveFractureEnergy": {
 			"initial_value":	0.10,
+			"train":			true,
 			"learning_rate"	:	0.1
 		},
 		"TensionStrength": {
 			"initial_value":	0.050,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"TensionFractureEnergy": {
 			"initial_value":	0.08,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"EnergyMultiplier":   1.0,
@@ -38,30 +45,37 @@
 	"TensExpoSoftCompParHardExpoSoft": {
 		"CompressiveElasticLimit": {
 			"initial_value":	0.08,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"CompressiveStrength": {
 			"initial_value":	0.12,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"CompressiveVirtualPeakStrength": {
 			"initial_value":	0.15,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"BiaxialCompressiveStrength": {
 			"initial_value":	0.17,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"CompressiveFractureEnergy": {
 			"initial_value":	1.0,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"TensionStrength": {
 			"initial_value":	0.05,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"TensionFractureEnergy": {
 			"initial_value":	0.08,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"EnergyMultiplier":   1.0,
@@ -70,46 +84,57 @@
 	"TensExpoSoftCompBezierHardSoftWithFractureEnergy": {
 		"CompressiveElasticLimit": {
 			"initial_value":	0.006,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"CompressiveStrength": {
 			"initial_value":	0.01,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"StrainCompressiveStrength": {
 			"initial_value":	0.007,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"CompressiveResidualStrength": {
 			"initial_value":	0.001,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"BiaxialCompressiveStrength": {
 			"initial_value":	0.012,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"CompressiveFractureEnergy": {
 			"initial_value":	0.2,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"TensionStrength": {
 			"initial_value":	0.0025,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"TensionFractureEnergy":{
 			"initial_value":	0.08,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"BezierControllerC1": {
 			"initial_value":	0.65,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"BezierControllerC2": {
 			"initial_value":	0.55,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"BezierControllerC3": {
 			"initial_value":	1.5,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"StressMultiplier":   		1000.0,
@@ -119,46 +144,57 @@
 	"TensExpoSoftCompBezierHardSoft": {
 		"CompressiveElasticLimit": {
 			"initial_value":	0.006,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"CompressiveStrength": {
 			"initial_value":	0.01,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"StrainCompressiveStrength": {
 			"initial_value":	0.007,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"JcontrolCompressiveStrain": {
 			"initial_value":	0.01,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"KcontrolCompressiveStrain": {
 			"initial_value":	0.014,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"KcontrolCompressiveStress": {
 			"initial_value":	0.004,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"CompressiveResidualStrength": {
 			"initial_value":	0.001,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"CompressiveUltimateStrain": {
 			"initial_value":	0.03,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"BiaxialCompressiveStrength": {
 			"initial_value":	0.012,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"TensionStrength": {
 			"initial_value":	0.00250,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"TensionFractureEnergy": {
 			"initial_value":	0.08,
+			"train":			true,
 			"learning_rate":	0.1
 		},
 		"StressMultiplier":   1000.0,

@@ -22,6 +22,10 @@ class ModelVariables(object):
                 entries['YoungsModulusTemp']['learning_rate'], \
                 entries['PoissonsRatio']['initial_value']
             ]
+            self.TrainRequest = [                      \
+                entries['YoungsModulusTemp']['train'], \
+                entries['PoissonsRatio']['train']      \
+            ]
     
         def ConstrainVariables(variables, initial_values):
             entries = initial_values['LinearElastic']
@@ -75,6 +79,13 @@ class ModelVariables(object):
                 entries['TensionStrength']['learning_rate'],           \
                 entries['TensionBoundingStress']['learning_rate'],     \
                 entries['BiaxialCompressiveStrength']['learning_rate'] \
+            ]
+            self.TrainRequest = [                              \
+                entries['CompressiveStrength']['train'],       \
+                entries['CompressiveBoundingStress']['train'], \
+                entries['TensionStrength']['train'],           \
+                entries['TensionBoundingStress']['train'],     \
+                entries['BiaxialCompressiveStrength']['train'] \
             ]
 
         def ConstrainVariables(variables, initial_values):
@@ -139,6 +150,13 @@ class ModelVariables(object):
                 entries['CompressiveFractureEnergy']['learning_rate'],  \
                 entries['TensionStrength']['learning_rate'],            \
                 entries['TensionFractureEnergy']['learning_rate']       \
+            ]
+            self.TrainRequest = [                               \
+                entries['CompressiveStrength']['train'],        \
+                entries['BiaxialCompressiveStrength']['train'], \
+                entries['CompressiveFractureEnergy']['train'],  \
+                entries['TensionStrength']['train'],            \
+                entries['TensionFractureEnergy']['train']       \
             ]
 
         def ConstrainVariables(variables, initial_values):
@@ -213,11 +231,20 @@ class ModelVariables(object):
             self.LearningRates = [                                             \
                 entries['CompressiveElasticLimit']['learning_rate'],           \
                 entries['CompressiveStrength']['learning_rate'],               \
-                entries['Compressive Virtual Peak Strength']['learning_rate'], \
+                entries['CompressiveVirtualPeakStrength']['learning_rate'], \
                 entries['BiaxialCompressiveStrength']['learning_rate'],        \
                 entries['CompressiveFractureEnergy']['learning_rate'],         \
                 entries['TensionStrength']['learning_rate'],                   \
                 entries['TensionFractureEnergy']['learning_rate']              \
+            ]
+            self.TrainRequest = [                                      \
+                entries['CompressiveElasticLimit']['train'],           \
+                entries['CompressiveStrength']['train'],               \
+                entries['CompressiveVirtualPeakStrength']['train'], \
+                entries['BiaxialCompressiveStrength']['train'],        \
+                entries['CompressiveFractureEnergy']['train'],         \
+                entries['TensionStrength']['train'],                   \
+                entries['TensionFractureEnergy']['train']              \
             ]
 
         def ConstrainVariables(variables,initial_values):
@@ -330,6 +357,19 @@ class ModelVariables(object):
                 entries['BiaxialCompressiveStrength']['learning_rate'],  \
                 entries['TensionStrength']['learning_rate'],             \
                 entries['TensionFractureEnergy']['learning_rate']        \
+            ]
+            self.TrainRequest = [                                \
+                entries['StrainCompressiveStrength']['train'],   \
+                entries['JcontrolCompressiveStrain']['train'],   \
+                entries['KcontrolCompressiveStrain']['train'],   \
+                entries['CompressiveUltimateStrain']['train'],   \
+                entries['CompressiveElasticLimit']['train'],     \
+                entries['CompressiveStrength']['train'],         \
+                entries['KcontrolCompressiveStress']['train'],   \
+                entries['CompressiveResidualStrength']['train'], \
+                entries['BiaxialCompressiveStrength']['train'],  \
+                entries['TensionStrength']['train'],             \
+                entries['TensionFractureEnergy']['train']        \
             ]
 
         def ConstrainVariables(variables, variables_le, initial_values):
@@ -480,6 +520,19 @@ class ModelVariables(object):
                 entries['BezierControllerC1']['learning_rate'],          \
                 entries['BezierControllerC2']['learning_rate'],          \
                 entries['BezierControllerC3']['learning_rate']           \
+            ]
+            self.TrainRequest = [                                \
+                entries['StrainCompressiveStrength']['train'],   \
+                entries['CompressiveElasticLimit']['train'],     \
+                entries['CompressiveStrength']['train'],         \
+                entries['CompressiveResidualStrength']['train'], \
+                entries['BiaxialCompressiveStrength']['train'],  \
+                entries['CompressiveFractureEnergy']['train'],   \
+                entries['TensionStrength']['train'],             \
+                entries['TensionFractureEnergy']['train'],       \
+                entries['BezierControllerC1']['train'],          \
+                entries['BezierControllerC2']['train'],          \
+                entries['BezierControllerC3']['train']           \
             ]
 
         def ConstrainVariables(variables, variables_le, initial_values):
