@@ -8,9 +8,9 @@
 		"yield_surf_ten"	:		"PosPetracca",
 		"yield_surf_comp"	:		"NegPetracca",
 		"damage_ten"		:		"ExpoSoft",
-		"damage_comp"		:		"BezierHardSoft",
+		"damage_comp"		:		"ParHardExpoSoft",
 		"bezier_settings"	:	{
-			"applied?"				:		"Yes",
+			"applied?"				:		"No",
 			"comp_energy_approach"	:       "Off",
 			"train_controllers"		:		"No"
 				}

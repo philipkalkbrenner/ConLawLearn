@@ -24,7 +24,7 @@
 		"optimizer_1":		"AdadeltaOptimizer",
 		"optimizer_2":		"AdagradOptimizer",
 		"optimizer":		"AdamOptimizer",
-		"max_epoch":		100,
+		"max_epoch":		1000,
 		"learn_crit":		1.0e-7
 		}
 	},
@@ -37,7 +37,7 @@
 		"yield_surf_ten":	"PosPetracca",
 		"yield_surf_comp":	"NegPetracca",
 		"damage_ten":		"ExpoSoft",
-		"damage_comp":		"BezierHardSoft",
+		"damage_comp":		"ParHardExpoSoft",
 		"bezier_settings":{
 			"comp_energy_approach":	false
 				}
