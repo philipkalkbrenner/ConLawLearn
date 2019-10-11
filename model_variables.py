@@ -11,29 +11,29 @@ class ModelVariables(object):
         def __init__(self, initial_values):
             entries = initial_values['LinearElastic']
             with tf.name_scope('ModelVariables'):
-                e = tf.Variable(entries['YoungsModulusTemp']['initial_value'], \
-                name='YoungsModulusTemp')
-                e_multiplier = tf.constant(entries['YoungsModulusMultiplier'], \
-                name='YoungsModulusMultiplier')
+                e = tf.Variable(entries['YoungsModulus']['initial_value'], name='YoungsModulus')
                 nu = tf.Variable(entries['PoissonsRatio']['initial_value'],name='PoissonsRatio')
             self.Variables = [e, nu]
             self.Vars4Print = ['E:   Youngs Modulus', 'Nu:  Poissons Ratio']
             self.LearningRates = [
-                entries['YoungsModulusTemp']['learning_rate'], \
+                entries['YoungsModulus']['learning_rate'], \
                 entries['PoissonsRatio']['initial_value']
             ]
             self.TrainRequest = [                      \
-                entries['YoungsModulusTemp']['train'], \
+                entries['YoungsModulus']['train'], \
                 entries['PoissonsRatio']['train']      \
             ]
     
         def ConstrainVariables(variables, initial_values):
             entries = initial_values['LinearElastic']
+
             with tf.name_scope('ConstrainLinearElasticVariables'):
                 e = tf.multiply(variables[0], \
-                                entries['YoungsModulusMultiplier'],\
+                                entries['YoungsModulus']['multiplier'],\
                                 name='YoungsModulus')
-                nu  = tf.clip_by_value(variables[1], 0.0000001, 0.5)
+                min_nu = entries['PoissonsRatio']['min_value']
+                max_nu = entries['PoissonsRatio']['max_value']
+                nu  = tf.clip_by_value(variables[1], min_nu, max_nu)
             var_dict = {'E':e, 'NU': nu}
             return var_dict
     '''
@@ -250,27 +250,40 @@ class ModelVariables(object):
         def ConstrainVariables(variables,initial_values):
             entries = initial_values['TensExpoSoftCompParHardExpoSoft']
             with tf.name_scope('ConstrainDamageVariables'):
-                tol_s = 1e-10
-                tol_g = 1e-10
-                inf = 1e+12
 
+                tol_s = 1e-10
                 energy_multi = entries['EnergyMultiplier']
                 stress_multi = entries['StressMultiplier']
 
+                min_s0 = entries['CompressiveElasticLimit']['min_value'] * stress_multi
+                max_s0 = entries['CompressiveElasticLimit']['max_value'] * stress_multi
+
+                max_sp = entries['CompressiveStrength']['max_value'] * stress_multi
+                max_spp = entries['CompressiveVirtualPeakStrength']['max_value'] * stress_multi
+                max_sbi = entries['BiaxialCompressiveStrength']['max_value'] * stress_multi
+
+                min_gc = entries['CompressiveFractureEnergy']['min_value'] * energy_multi
+                max_gc = entries['CompressiveFractureEnergy']['max_value'] * energy_multi
+                min_ft = entries['TensionStrength']['min_value'] * stress_multi
+                max_ft = entries['TensionStrength']['max_value'] * stress_multi
+                min_gt = entries['TensionFractureEnergy']['min_value'] * energy_multi
+                max_gt = entries['TensionFractureEnergy']['max_value'] * energy_multi
+
+
                 s0  = tf.clip_by_value(tf.multiply(variables[0],stress_multi),\
-                                                   tol_s, inf)
+                                                   min_s0, max_s0)
                 sp  = tf.clip_by_value(tf.multiply(variables[1],stress_multi),\
-                                                   tf.add(s0,tol_s), inf)
+                                                   tf.add(s0,tol_s), max_sp)
                 spp = tf.clip_by_value(tf.multiply(variables[2],stress_multi),\
-                                                   tf.add(sp,tol_s), inf)
+                                                   tf.add(sp,tol_s), max_spp)
                 sbi = tf.clip_by_value(tf.multiply(variables[3],stress_multi),\
-                                                   tf.add(sp, tol_s), inf)
+                                                   tf.add(sp, tol_s), max_sbi)
                 gc  = tf.clip_by_value(tf.multiply(variables[4],energy_multi),\
-                                                   tol_g, inf)
+                                                   min_gc, max_gc)
                 ft  = tf.clip_by_value(tf.multiply(variables[5],stress_multi),\
-                                                   tol_s, inf)
+                                                   min_ft, max_ft)
                 gt  = tf.clip_by_value(tf.multiply(variables[6],energy_multi),\
-                                                   tol_g, inf)
+                                                   min_gt, max_gt)
             var_dict = {'S0': s0, 'SP': sp, 'SPP': spp, 'SBI': sbi, 'GC': gc, \
                         'FT': ft, 'GT': gt}
             return var_dict
@@ -378,46 +391,58 @@ class ModelVariables(object):
 
                 tol_s = 1e-10
                 tol_e = 1e-10
-                tol_eps = 1e-10
-                tol_g = 1e-10
-                inf   = 1e+12
 
                 stress_multi = entries["StressMultiplier"]
                 energy_multi = entries["EnergyMultiplier"]
 
-                sp  = tf.clip_by_value(tf.multiply(variables[5],stress_multi), tol_s, inf)
-                #sbi = tf.clip_by_value(tf.multiply(variables[8],stress_multi), tol_s, inf)
-                sbi = tf.clip_by_value(tf.multiply(variables[8],stress_multi), sp * 1.05, inf)
-                s0  = tf.clip_by_value(tf.multiply(variables[4],stress_multi), tol_s, tf.subtract(sp, tol_s))
+                min_s0 = entries['CompressiveElasticLimit']['min_value'] * stress_multi
+                min_sp = entries['CompressiveStrength']['min_value'] * stress_multi
+                max_sp = entries['CompressiveStrength']['max_value'] * stress_multi
+
+                min_factor_sbi = entries['BiaxialCompressiveStrength']['min_factor']
+                max_sbi = entries['BiaxialCompressiveStrength']['max_value'] * stress_multi
+
+                min_sr = entries['CompressiveResidualStrength']['min_value'] * stress_multi
+                max_factor_sr = entries['CompressiveResidualStrength']['max_factor'] * stress_multi
+
+                max_ep = entries['StrainCompressiveStrength']['max_value']
+                max_ej = entries['JcontrolCompressiveStrain']['max_value']
+                max_ek = entries['KcontrolCompressiveStrain']['max_value']
+                max_er = max_ek + 0.1
+                max_eu = max_er + 0.1
+
+                min_ft = entries['TensionStrength']['min_value'] * stress_multi
+                max_ft = entries['TensionStrength']['max_value'] * stress_multi
+                min_gt = entries['TensionFractureEnergy']['min_value'] * energy_multi
+                max_gt = entries['TensionFractureEnergy']['max_value'] * energy_multi
+
+                sp  = tf.clip_by_value(tf.multiply(variables[5],stress_multi), min_sp, max_sp)
+                sbi = tf.clip_by_value(tf.multiply(variables[8],stress_multi), sp * min_factor_sbi, max_sbi)
+                s0  = tf.clip_by_value(tf.multiply(variables[4],stress_multi), min_s0, tf.subtract(sp, tol_s))
 
                 si = sp
                 sj = sp
                 
-                sr = tf.clip_by_value(tf.multiply(variables[7],stress_multi), tol_s, tf.multiply(sp,0.9))
+                sr = tf.clip_by_value(tf.multiply(variables[7],stress_multi), min_sr, tf.multiply(sp,max_factor_sr))
                 sk = tf.clip_by_value(tf.multiply(variables[6],stress_multi), tf.add(sr, tol_s), tf.subtract(sj, tol_s))
                 su = sr
 
                 e0 = tf.divide(s0, variables_le['E'])
                 ei = tf.divide(si, variables_le['E'])
                 
-                ep = tf.clip_by_value(variables[0], tf.add(ei,tol_e), inf)
-                ej = tf.clip_by_value(variables[1], tf.add(ep,tol_e), inf)
-                ek = tf.clip_by_value(variables[2], tf.add(ej,tol_e), inf)
-
-                #er_t1 = tf.multiply(tf.subtract(ek, ej),tf.subtract(sp,sr))
-                #er_t2 = tf.divide(er_t1,tf.subtract(sp,sk))
-                #er_t3 = tf.add(ej,er_t2)
-                #er = tf.clip_by_value(er_t3, tf.add(ek,tol_e), inf)
+                ep = tf.clip_by_value(variables[0], tf.add(ei,tol_e), max_ep)
+                ej = tf.clip_by_value(variables[1], tf.add(ep,tol_e), max_ej)
+                ek = tf.clip_by_value(variables[2], tf.add(ej,tol_e), max_ek)
 
                 er_t1 = tf.multiply(tf.subtract(ek, ej),tf.subtract(sp,sr), name ="Er_temp1")
                 er_t2 = tf.divide(er_t1,tf.subtract(sp,sk), name ="Er_temp2")
                 er_t3 = tf.add(ej,er_t2, name ="RBezControlStrain")
-                er = tf.clip_by_value(er_t3, tf.add(ek,tol_e), inf, name = "ClipEr")
+                er = tf.clip_by_value(er_t3, tf.add(ek,tol_e), max_er, name = "ClipEr")
                 
-                eu = tf.clip_by_value(variables[3], tf.add(er,tol_e), inf)
+                eu = tf.clip_by_value(variables[3], tf.add(er,tol_e), max_eu)
                     
-                ft = tf.clip_by_value(tf.multiply(variables[9],stress_multi), tol_s, inf)
-                gt = tf.clip_by_value(tf.multiply(variables[10], energy_multi), tol_g, inf)
+                ft = tf.clip_by_value(tf.multiply(variables[9],stress_multi), min_ft, max_ft)
+                gt = tf.clip_by_value(tf.multiply(variables[10], energy_multi), min_gt, max_gt)
 
                 ei = ModelVariables._petracca_bezier_update(e0, ei, ep, "Ei_")
                 ej = ModelVariables._petracca_bezier_update(ep, ej, ek, "Ej_")
