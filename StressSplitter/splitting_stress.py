@@ -100,7 +100,8 @@ class EffectiveStressSplit(object):
         with tf.name_scope('Theta_Principal'):
             angle = tf.multiply(tf.constant(0.50),argument, name='Theta_P')
         return angle
-    '''
+        '''
+
     def __case_selection(batch, num, den):
         cond_num = tf.less(tf.abs(num),1e-12, name='CondNumerator')
         cond_den = tf.less(tf.abs(den),1e-12, name='CondDenominator')
@@ -129,7 +130,7 @@ class EffectiveStressSplit(object):
         # num = 0 and den =! 0:
         cond_num_den_2 = tf.logical_and(cond_num_less, cond_den_greater)
         # num =! 0 and den = 0
-        cond_num_den_3 = tf.logical_and(cond_num_greater, cond_num_less)
+        cond_num_den_3 = tf.logical_and(cond_num_greater, cond_den_less)
         # num =! 0 and den =! 0:
         cond_num_den_4 = tf.logical_and(cond_num_greater, cond_den_greater)
 
@@ -139,8 +140,10 @@ class EffectiveStressSplit(object):
 
         pi_half  = tf.fill([batch],tf.divide(np.pi,2.0), name='PiHalf')
 
-        arg = tf.where(cond_num_den_4, tf.atan(tf.divide(num,den)), tf.where(cond_num_den_3, pi_half,tf.zeros_like(num)))
+        arg = tf.where(cond_num_den_4, tf.atan(tf.divide(num,den)), tf.where(cond_num_den_3, pi_half, tf.zeros_like(num)))
         return arg
+
+
 
     def __get_rotation_matrix(angle):
         with tf.name_scope('RotationMatrix'):

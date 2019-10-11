@@ -125,7 +125,7 @@ class YieldCriteriaUtilities(object):
         # num = 0 and den =! 0:
         cond_num_den_2 = tf.logical_and(cond_num_less, cond_den_greater)
         # num =! 0 and den = 0
-        cond_num_den_3 = tf.logical_and(cond_num_greater, cond_num_less)
+        cond_num_den_3 = tf.logical_and(cond_num_greater, cond_den_less)
         # num =! 0 and den =! 0:
         cond_num_den_4 = tf.logical_and(cond_num_greater, cond_den_greater)
 
