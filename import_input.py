@@ -43,11 +43,30 @@ class TrainingInput(object):
                       "splitting_criterion" in the ModelSettings.json 
                 '''
                 eps_le, eps_nl, sig_le, sig_nl = self.__automated_ordered_input_data(input_settings)
-    
+            elif self.data_collection == "for_print":
+                pass
+
             else: 
                 print("ERROR: No import method of the input data defined in the ModelSettings.json!", "\n", \
                         "either manual or automated is possible!")
                 sys.exit()
+
+            if self.data_collection == "for_print":
+                '''
+                Only defined to import the input strains for printing results
+                '''
+                eps_average, eps_boundary, sig_average = self.__import_strains_for_training(input_settings)
+                self.GetAverageStrains  = np.asarray(eps_average, np.float32)
+                self.GetBoundaryStrains = np.asarray(eps_boundary, np.float32)
+                self.GetAverageStresses = np.asarray(sig_average, np.float32)
+                eps_le = 0.0
+                eps_nl = 0.0
+                sig_le = 0.0
+                sig_nl = 0.0
+
+                #eps_le, eps_nl, sig_le, sig_nl = self.__automated_ordered_input_data(input_settings)
+
+
         
             self.GetStrainsLinearElastic     = np.asarray(eps_le, np.float32)
             self.GetStrainsNonlinear         = np.asarray(eps_nl, np.float32)
@@ -155,6 +174,14 @@ class TrainingInput(object):
     '''
     ------------------------------------------------------------------------------------------------
     '''   
+    def __import_strains_for_training(self, input_settings):
+        with open(self.input_names[0]) as input_data:
+            input_data = json.load(input_data)
+
+        stresses_average = input_data["Mean_Value_of_CAUCHY_STRESS_VECTOR"]
+        strains_average = input_data["Mean_Value_of_GREEN_LAGRANGE_STRAIN_VECTOR"]
+        strains_boundary = input_data["Values_of_BOUNDARY_STRAIN_VECTOR"]
+        return strains_average, strains_boundary, stresses_average
 
     def __automated_ordered_input_data(self, input_settings):
         splitting_criterion = input_settings["splitting_criterion"]
