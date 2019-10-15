@@ -131,7 +131,7 @@ class YieldCriteriaUtilities(object):
 
 
         num = tf.where(cond_num_den_4, num, tf.zeros_like(num))
-        den = tf.where(cond_num_den_4, num, tf.ones_like(den))
+        den = tf.where(cond_num_den_4, den, tf.ones_like(den))
 
         pi_half  = tf.fill([batch],tf.divide(np.pi,2.0), name='PiHalf')
 

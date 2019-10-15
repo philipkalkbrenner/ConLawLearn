@@ -134,16 +134,13 @@ class EffectiveStressSplit(object):
         # num =! 0 and den =! 0:
         cond_num_den_4 = tf.logical_and(cond_num_greater, cond_den_greater)
 
-
         num = tf.where(cond_num_den_4, num, tf.zeros_like(num))
-        den = tf.where(cond_num_den_4, num, tf.ones_like(den))
+        den = tf.where(cond_num_den_4, den, tf.ones_like(den))
 
         pi_half  = tf.fill([batch],tf.divide(np.pi,2.0), name='PiHalf')
 
-        arg = tf.where(cond_num_den_4, tf.atan(tf.divide(num,den)), tf.where(cond_num_den_3, pi_half, tf.zeros_like(num)))
+        arg = tf.where(cond_num_den_4, x = tf.atan(tf.divide(num,den)), y = tf.where(cond_num_den_3, x = pi_half, y = tf.zeros_like(num)))
         return arg
-
-
 
     def __get_rotation_matrix(angle):
         with tf.name_scope('RotationMatrix'):
