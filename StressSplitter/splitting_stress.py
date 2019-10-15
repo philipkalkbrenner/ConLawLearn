@@ -17,10 +17,62 @@ class EffectiveStressSplit(object):
         Theta = EffectiveStressSplit.__get_principal_direction(sig_eff)
         return Theta
 
-    #def Get
+    def GetPrincipalDirectionStressRad(sig):
+        Theta = EffectiveStressSplit.__get_principal_direction(sig)
+        return Theta
+
+    def GetPrincipalDirectionStressDeg(sig):
+        Theta = EffectiveStressSplit.__get_principal_direction(sig)
+        Theta = tf.divide(tf.multiply(Theta, 180), np.pi)
+        return Theta
+
+    def GetPrincipalDirectionStrainRad(eps):
+        Theta = EffectiveStressSplit.__get_principal_direction_strain(eps)
+        return Theta
+
+    def GetPrincipalDirectionStrainDeg(eps):
+        Theta = EffectiveStressSplit.__get_principal_direction_strain(eps)
+        Theta = tf.divide(tf.multiply(Theta, 180), np.pi)
+        return Theta
+
+    def GetPrincipalStressState(sig):
+        S1, S2, Theta = EffectiveStressSplit.__get_principal_state_stress(sig)
+        S1 = tf.expand_dims(S1,1)
+        S2 = tf.expand_dims(S2,1)
+        Theta = tf.expand_dims(Theta,1)
+        Prince=tf.concat([S1, S2, Theta], 1)
+        return Prince
+
+    def GetPrincipalStrainState(eps):
+        E1, E2, Theta = EffectiveStressSplit.__get_principal_state_strain(eps)
+        E1 = tf.expand_dims(E1,1)
+        E2 = tf.expand_dims(E2,1)
+        Theta = tf.expand_dims(Theta,1)
+        Prince=tf.concat([E1, E2, Theta], 1)
+        return Prince
 
 
 
+
+    def __get_principal_state_stress(sig):
+        batch = tf.cast(tf.shape(sig)[0],tf.int32)
+        SIG_EFF = EffectiveStressSplit.__voigt_to_matrix_2d(batch, sig)
+        THETA = EffectiveStressSplit.__get_principal_direction(sig)
+        R,RT  = EffectiveStressSplit.__get_rotation_matrix(THETA)
+        SIG_EFF_PRI = tf.matmul(tf.matmul(R, SIG_EFF), RT)
+        S1 = SIG_EFF_PRI[:,0][:,0]
+        S2 = SIG_EFF_PRI[:,1][:,1]
+        return S1, S2, THETA
+
+    def __get_principal_state_strain(eps):
+        batch = tf.cast(tf.shape(eps)[0],tf.int32)
+        EPS_EFF = EffectiveStressSplit.__voigt_to_matrix_2d(batch, eps)
+        THETA = EffectiveStressSplit.__get_principal_direction_strain(eps)
+        R,RT  = EffectiveStressSplit.__get_rotation_matrix(THETA)
+        EPS_EFF_PRI = tf.matmul(tf.matmul(R, EPS_EFF), RT)
+        E1 = EPS_EFF_PRI[:,0][:,0]
+        E2 = EPS_EFF_PRI[:,1][:,1]
+        return E1, E2, THETA
 
     def __split_effective_stress(sig_eff):
         batch = tf.cast(tf.shape(sig_eff)[0],tf.int32)
@@ -95,6 +147,20 @@ class EffectiveStressSplit(object):
                 numerator = tf.multiply(2.0, sig_eff[:,2])
             with tf.name_scope('Denomimator'):
                 denominator = tf.subtract(sig_eff[:,0],sig_eff[:,1])
+            with tf.name_scope('Selection'):
+                argument = EffectiveStressSplit.__case_selection(batch, numerator, denominator)
+        with tf.name_scope('Theta_Principal'):
+            angle = tf.multiply(tf.constant(0.50),argument, name='Theta_P')
+        return angle
+
+    def __get_principal_direction_strain(eps):
+        with tf.name_scope('Computation_E'):
+            with tf.name_scope('Size'):
+                batch = tf.cast(tf.shape(eps)[0],tf.int32) # shape of matrix
+            with tf.name_scope('Numerator'):
+                numerator = eps[:,2]
+            with tf.name_scope('Denomimator'):
+                denominator = tf.subtract(eps[:,0],eps[:,1])
             with tf.name_scope('Selection'):
                 argument = EffectiveStressSplit.__case_selection(batch, numerator, denominator)
         with tf.name_scope('Theta_Principal'):
